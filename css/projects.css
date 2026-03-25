@@ -1,0 +1,366 @@
+/* Projects Page Styling */
+
+.projects-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    position: relative;
+    z-index: 50;
+    min-height: calc(100vh - 200px);
+}
+
+.projects-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.projects-header h2 {
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--light-purple), var(--deep-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.projects-header p {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.project-card {
+    background: linear-gradient(135deg, rgba(106, 71, 170, 0.1), rgba(194, 191, 240, 0.05));
+    border: 1px solid rgba(194, 191, 240, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(194, 191, 240, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.project-card:hover::before {
+    left: 100%;
+}
+
+.project-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--deep-purple);
+    box-shadow: 0 15px 40px rgba(154, 78, 221, 0.2),
+                0 0 30px rgba(106, 71, 170, 0.15);
+}
+
+.project-card:hover .project-header h3 {
+    color: var(--light-purple);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.project-header h3 {
+    font-size: 1.5rem;
+    color: var(--deep-purple);
+    transition: color 0.3s ease;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.project-year {
+    font-size: 0.9rem;
+    color: var(--light-purple);
+    opacity: 0.7;
+    padding: 0.25rem 0.75rem;
+    background: rgba(194, 191, 240, 0.1);
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.project-description {
+    color: var(--text-color);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+    font-size: 0.95rem;
+}
+
+.project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.tech-tag {
+    display: inline-block;
+    background: rgba(154, 78, 221, 0.15);
+    border: 1px solid var(--deep-purple);
+    color: var(--light-purple);
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.tech-tag:hover {
+    background: rgba(154, 78, 221, 0.3);
+    border-color: var(--light-purple);
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .projects-container {
+        padding: 2rem 1rem;
+    }
+
+    .projects-header h2 {
+        font-size: 2rem;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .project-card {
+        padding: 1.5rem;
+    }
+
+    .project-header h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Animations for project cards */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.project-card:nth-child(1) { animation-delay: 0.1s; }
+.project-card:nth-child(2) { animation-delay: 0.2s; }
+.project-card:nth-child(3) { animation-delay: 0.3s; }
+.project-card:nth-child(4) { animation-delay: 0.4s; }
+.project-card:nth-child(5) { animation-delay: 0.5s; }
+.project-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Constellation View */
+.constellation-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(106, 71, 170, 0.03), rgba(0, 0, 0, 0.3));
+    border: 1px solid rgba(194, 191, 240, 0.1);
+    border-radius: 12px;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+#projectsCanvas {
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    filter: drop-shadow(0 0 20px rgba(194, 191, 240, 0.2));
+}
+
+/* Project Modal */
+.project-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.project-modal.active {
+    opacity: 1;
+}
+
+.project-modal-content {
+    background: linear-gradient(135deg, rgba(31, 36, 33, 0.95), rgba(106, 71, 170, 0.15));
+    border: 1px solid rgba(194, 191, 240, 0.3);
+    border-radius: 12px;
+    padding: 2.5rem;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(194, 191, 240, 0.2);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.project-modal-content h3 {
+    font-size: 2rem;
+    color: var(--light-purple);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.modal-year {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--deep-purple);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(194, 191, 240, 0.1);
+    border-radius: 20px;
+}
+
+.modal-description {
+    color: var(--text-color);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+    font-size: 0.95rem;
+}
+
+.modal-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.modal-tech .tech-tag {
+    background: rgba(154, 78, 221, 0.2);
+    border: 1px solid var(--deep-purple);
+}
+
+.project-modal-github {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--light-purple), var(--deep-purple));
+    border: none;
+    border-radius: 50%;
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.project-modal-github:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(194, 191, 240, 0.5);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(194, 191, 240, 0.1);
+    border: 1px solid var(--deep-purple);
+    color: var(--light-purple);
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: var(--deep-purple);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* Scrollbar styling for modal */
+.project-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.project-modal-content::-webkit-scrollbar-track {
+    background: rgba(194, 191, 240, 0.05);
+    border-radius: 10px;
+}
+
+.project-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(194, 191, 240, 0.3);
+    border-radius: 10px;
+}
+
+.project-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(194, 191, 240, 0.5);
+}
+
+@media (max-width: 768px) {
+    .project-modal-content {
+        max-width: 90%;
+        padding: 2rem 1.5rem;
+    }
+
+    .project-modal-content h3 {
+        font-size: 1.5rem;
+    }
+
+    #projectsCanvas {
+        max-width: 100%;
+    }
+}

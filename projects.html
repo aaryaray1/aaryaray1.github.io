@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/projects.css">
+</head>
+<body class="page-with-stars">
+    <div class="stars-background"></div>
+    
+    <!-- Shooting stars -->
+    <div class="shooting-star shooting-star-1"></div>
+    <div class="shooting-star shooting-star-2"></div>
+    <div class="shooting-star shooting-star-3"></div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <span class="logo">Aarya Ray Chaudhuri</span>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About Me</a></li>
+                <li><a href="#" class="nav-link active">Projects</a></li>
+                <li><a href="assets/cv.pdf" class="nav-link" target="_blank">CV</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="projects-container">
+        <div class="projects-header">
+            <h2>My Projects</h2>
+            <p style="opacity: 0.8;">Click on a star to explore each project</p>
+        </div>
+
+        <div class="constellation-view">
+            <canvas id="projectsCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <div class="projects-grid" style="display: none;">
+            <!-- Project 1 -->
+            <div class="project-card" id="captain-alex">
+                <div class="project-header">
+                    <h3>Captain Alex</h3>
+                    <span class="project-year">2026</span>
+                </div>
+                <p class="project-description">
+                    Built during Thomas More Professional Week, Captain Alex is an IoT powered product meant to help farmers in East Africa against the many issues they face, like pests, unpredictable weather and soil conditions. In our team, I worked on the regression model that factored in soil conditions in East Africa, live weather data from OpenMeteo to give farmers a daily report on their farm via SMS messages, alongside dynamic advice on how to maximize their yield based on the state of the farm and weather.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">Pandas</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">IoT</span>
+                </div>
+                <a href="https://github.com/PJUytterhoeven/CaptainAlex" class="project-github" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="project-card" id="portfolio-website">
+                <div class="project-header">
+                    <h3>Portfolio Website</h3>
+                    <span class="project-year">2026</span>
+                </div>
+                <p class="project-description">
+                    This very website! A galactic-themed portfolio with randomized constellations for navigation.
+                    Built to showcase both technical and creative skills.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">HTML</span>
+                    <span class="tech-tag">CSS</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">SVG</span>
+                </div>
+                <a href="#" class="project-github" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="project-card" id="homelab">
+                <div class="project-header">
+                    <h3>Homelab</h3>
+                    <span class="project-year">Ongoing</span>
+                </div>
+                <p class="project-description">
+                    Exploring IoT solutions and smart systems through homelab experimentation. Currently it is a set up of 2 laptops and a Raspberry Pi 4, hosting a music server (Jellyfin), a Minecraft server, and a cloud storage for my photos and videos. Future plans include a smart home hub for climate control and lights, home security and a router for it's own network.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">IoT</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Networking</span>
+                    <span class="tech-tag">Automation</span>
+                </div>
+            </div>
+
+            <!-- Project 4 -->
+            <div class="project-card" id="machine-learning">
+                <div class="project-header">
+                    <h3>Machine Learning</h3>
+                    <span class="project-year">Ongoing</span>
+                </div>
+                <p class="project-description">
+                    From working with AILabs (based in Kolkata) to build ML models for Diabetes prediction, regression model to predicy earthquakes during Cisco Career Exploration 2023.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Pandas</span>
+                    <span class="tech-tag">PyTorch</span>
+                    <span class="tech-tag">Sci-Kit Learn</span>
+                    <span class="tech-tag">NumPy</span>
+                </div>
+            </div>
+
+            <!-- Project 5 -->
+            <div class="project-card" id="good-times">
+                <div class="project-header">
+                    <h3>Good Times Music Blog</h3>
+                    <span class="project-year">2025</span>
+                </div>
+                <p class="project-description">
+                    Using the TALLstack, I built a music blog to share my thoughts on albums, artists, and the music industry. It features user authentication, a randomized page home page layout that's still easy to navigate, and a clean, modern design. It's a passion project that combines my love for music and web development.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">Tailwind CSS</span>
+                    <span class="tech-tag">Alpine.js</span>
+                    <span class="tech-tag">Laravel</span>
+                    <span class="tech-tag">Livewire</span>
+                </div>
+                <a href="https://github.com/aaryaray1/goodtimes" class="project-github" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+            <!-- Project 6 -->
+            <div class="project-card" id="speeds7ers">
+                <div class="project-header">
+                    <h3>Speeds7ers</h3>
+                    <span class="project-year">2024</span>
+                </div>
+                <p class="project-description">
+                    Built during a Thomas More hackathon for games involving Artificial Intelligence, Speeds7ers is a Tron-inspired game with multiple difficulties where you face off against a self-learning AI opponent powered using a DeepQ learning algorithm that learns from your gameplay patterns and adapts its strategy.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">Keras</span>
+                    <span class="tech-tag">PyTorch</span>
+                    <span class="tech-tag">PyGame</span>
+                </div>
+                <a href="https://github.com/aaryaray1/speeds7ers" class="project-github" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+            <!-- Project 7 -->
+            <div class="project-card" id="scout-agent-search">
+                <div class="project-header">
+                    <h3>Scout Agent Search</h3>
+                    <span class="project-year">Ongoing</span>
+                </div>
+                <p class="project-description">
+                    Scout is an open-source project I started after making my first OpenClaw agent. Initially I faced some difficulties pulling data from web sources, and after looking into it I realized that the way agents pull data from the web is optimized for human readability, but not for AI Consumption. As a result, I started building Scout, a "search engine" for OpenClaw models to pull data in recognizable JSON formats and produce more accurate and efficient results for users. Check back later for more progress!
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">NumPy</span>
+                    <span class="tech-tag">Pydantic</span>
+                    <span class="tech-tag">OpenClaw</span>
+                    <span class="tech-tag">FastAPI</span>
+                </div>
+                <a href="https://github.com/aaryaray1/scout-agent-search" class="project-github" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">Home</a>
+            <a href="about.html" class="footer-link">About Me</a>
+            <a href="projects.html" class="footer-link">Projects</a>
+            <a href="https://www.linkedin.com/in/aarya-ray-3b2663270/" class="footer-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/aaryaray1" class="footer-link" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.kaggle.com/aaryaraychaudhuri" class="footer-link" target="_blank"><i class="fab fa-kaggle"></i></a>
+            <a href="assets/cv.pdf" class="footer-link" target="_blank">CV</a>
+        </div>
+        <p>&copy; 2026 Aarya Ray Chaudhuri. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/projects.js"></script>
+</body>
+</html>
