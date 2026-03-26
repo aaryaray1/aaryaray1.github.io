@@ -1,4 +1,4 @@
-// Project constellation data with actual constellation names
+// Project constellation data used to build the SVG constellation on the Projects page
 const projects = [
     {
         id: 'captain-alex',
@@ -55,125 +55,135 @@ document.addEventListener('DOMContentLoaded', () => {
     initProjectConstellation();
 });
 
+// Build a constellation similar in style to the homepage one, but for projects
 function initProjectConstellation() {
-    const canvas = document.getElementById('projectsCanvas');
-    if (!canvas) return;
+    const svg = document.getElementById('projectsConstellation');
+    if (!svg) return;
 
-    const ctx = canvas.getContext('2d');
-    
-    ctx.strokeStyle = 'rgba(194, 191, 240, 0.4)';
-    ctx.lineWidth = 1.5;
+    const svgWidth = 800;
+    const svgHeight = 600;
+    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
 
-    // Multiple connection patterns for the project "constellation"
+    const centerX = svgWidth / 2;
+    const centerY = svgHeight / 2 - 20;
+    const baseRadius = Math.min(svgWidth, svgHeight) / 3.2;
     const count = projects.length;
 
-    function drawLoop() {
-        for (let i = 0; i < count; i++) {
-            const a = projects[i];
-            const b = projects[(i + 1) % count];
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-        }
-    }
-
-    function drawStar() {
-        const center = projects[0];
-        for (let i = 1; i < count; i++) {
-            const p = projects[i];
-            ctx.beginPath();
-            ctx.moveTo(center.x, center.y);
-            ctx.lineTo(p.x, p.y);
-            ctx.stroke();
-        }
-    }
-
-    function drawCrissCross() {
-        for (let i = 0; i < count; i++) {
-            const a = projects[i];
-            const b = projects[(i + Math.floor(count / 2)) % count];
-            if (a === b) continue;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-        }
-    }
-
-    function drawPath() {
-        for (let i = 0; i < count - 1; i++) {
-            const a = projects[i];
-            const b = projects[i + 1];
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-        }
-    }
-
-    function drawRandomGraph() {
-        // connect in a path first
-        drawPath();
-        // then add a few random extra edges
-        const extra = Math.max(1, Math.floor(count / 2));
-        for (let k = 0; k < extra; k++) {
-            const i = Math.floor(Math.random() * count);
-            let j = Math.floor(Math.random() * count);
-            if (i === j) j = (j + 1) % count;
-            const a = projects[i];
-            const b = projects[j];
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-        }
-    }
-
-    const patterns = [drawLoop, drawStar, drawCrissCross, drawPath, drawRandomGraph];
-    const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-    pattern();
-
-    // Draw project stars
-    projects.forEach((project, index) => {
-        // Star circle
-        ctx.fillStyle = 'rgba(194, 191, 240, 0.9)';
-        ctx.beginPath();
-        ctx.arc(project.x, project.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Glow effect
-        ctx.shadowColor = 'rgba(194, 191, 240, 0.8)';
-        ctx.shadowBlur = 15;
-        ctx.strokeStyle = 'rgba(194, 191, 240, 0.6)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(project.x, project.y, 8, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
+    // Position each project around a loose circle like the homepage
+    const angleStep = (2 * Math.PI) / count;
+    const stars = projects.map((project, idx) => {
+        const angle = idx * angleStep + (Math.random() - 0.5) * 0.35;
+        const r = baseRadius + (Math.random() - 0.5) * 45;
+        const x = centerX + r * Math.cos(angle);
+        const y = centerY + r * Math.sin(angle);
+        return {
+            x,
+            y,
+            label: project.name,
+            project
+        };
     });
-    // Add click handlers
-    canvas.addEventListener('click', (e) => handleCanvasClick(e, canvas));
+
+    function buildLoopConnections() {
+        const connections = [];
+        for (let i = 0; i < count - 1; i++) {
+            connections.push([i, i + 1]);
+        }
+        if (count > 2) connections.push([count - 1, 0]);
+        return connections;
+    }
+
+    function buildStarConnections() {
+        const connections = [];
+        for (let i = 1; i < count; i++) {
+            connections.push([0, i]);
+        }
+        return connections;
+    }
+
+    function buildWebConnections() {
+        const connections = [];
+        for (let i = 0; i < count; i++) {
+            connections.push([i, (i + 1) % count]);
+            connections.push([i, (i + 2) % count]);
+        }
+        return connections;
+    }
+
+    const patterns = [
+        buildLoopConnections(),
+        buildStarConnections(),
+        buildWebConnections()
+    ];
+    const connections = patterns[Math.floor(Math.random() * patterns.length)];
+
+    renderProjectConstellation(svg, stars, connections);
 }
 
-function handleCanvasClick(e, canvas) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+// Render the projects constellation as SVG with the same star/label style as the homepage
+function renderProjectConstellation(svg, stars, connections) {
+    svg.innerHTML = '';
 
-    // Check if click is near any project
-    for (const project of projects) {
-        const dx = x - project.x;
-        const dy = y - project.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 20) {
-            showProjectCard(project);
-            return;
-        }
-    }
+    const linesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    linesGroup.setAttribute('class', 'constellation-lines');
+
+    connections.forEach(([i, j], idx) => {
+        const a = stars[i];
+        const b = stars[j];
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', a.x);
+        line.setAttribute('y1', a.y);
+        line.setAttribute('x2', b.x);
+        line.setAttribute('y2', b.y);
+        line.style.animationDelay = `${idx * 0.08}s`;
+        linesGroup.appendChild(line);
+    });
+
+    svg.appendChild(linesGroup);
+
+    const starsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    starsGroup.setAttribute('class', 'stars-group');
+
+    stars.forEach((star, index) => {
+        const starGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        starGroup.setAttribute('class', 'star-group');
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', star.x);
+        circle.setAttribute('cy', star.y);
+        circle.setAttribute('r', '11');
+        circle.setAttribute('class', 'constellation-star');
+        circle.style.animationDelay = `${index * 0.12}s`;
+
+        // Click opens the project modal
+        circle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showProjectCard(star.project);
+        });
+
+        // Hover toggles label visibility
+        circle.addEventListener('mouseenter', () => {
+            const label = starGroup.querySelector('.constellation-label');
+            if (label) label.classList.add('visible');
+        });
+        circle.addEventListener('mouseleave', () => {
+            const label = starGroup.querySelector('.constellation-label');
+            if (label) label.classList.remove('visible');
+        });
+
+        starGroup.appendChild(circle);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', star.x);
+        label.setAttribute('y', star.y - 20);
+        label.setAttribute('class', 'constellation-label');
+        label.textContent = star.label;
+
+        starGroup.appendChild(label);
+        starsGroup.appendChild(starGroup);
+    });
+
+    svg.appendChild(starsGroup);
 }
 
 function showProjectCard(project) {

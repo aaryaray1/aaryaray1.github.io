@@ -3,10 +3,11 @@
 .projects-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 3rem 2rem;
+    padding: 3.5rem 2.5rem;
     position: relative;
     z-index: 50;
     min-height: calc(100vh - 200px);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .projects-header {
@@ -16,7 +17,7 @@
 }
 
 .projects-header h2 {
-    font-size: 3rem;
+    font-size: 4rem;
     background: linear-gradient(135deg, var(--light-purple), var(--deep-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -26,7 +27,7 @@
 }
 
 .projects-header p {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--text-color);
     opacity: 0.8;
 }
@@ -86,7 +87,7 @@
 }
 
 .project-header h3 {
-    font-size: 1.5rem;
+    font-size: 2.1rem;
     color: var(--deep-purple);
     transition: color 0.3s ease;
     letter-spacing: 0.5px;
@@ -94,7 +95,7 @@
 }
 
 .project-year {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--light-purple);
     opacity: 0.7;
     padding: 0.25rem 0.75rem;
@@ -110,7 +111,7 @@
     opacity: 0.9;
     position: relative;
     z-index: 1;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
 }
 
 .project-tech {
@@ -188,18 +189,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(106, 71, 170, 0.03), rgba(0, 0, 0, 0.3));
-    border: 1px solid rgba(194, 191, 240, 0.1);
-    border-radius: 12px;
+    padding: 2rem 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     animation: fadeInUp 0.8s ease-out 0.2s backwards;
 }
 
-#projectsCanvas {
-    max-width: 100%;
+#projectsConstellation {
+    max-width: 125%;
     height: auto;
     cursor: crosshair;
-    filter: drop-shadow(0 0 20px rgba(194, 191, 240, 0.2));
+    filter: drop-shadow(0 0 24px rgba(194, 191, 240, 0.25));
 }
 
 /* Project Modal */
@@ -358,9 +359,5 @@
 
     .project-modal-content h3 {
         font-size: 1.5rem;
-    }
-
-    #projectsCanvas {
-        max-width: 100%;
     }
 }

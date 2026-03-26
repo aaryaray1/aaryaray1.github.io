@@ -369,6 +369,41 @@ const CONSTELLATIONS = (() => {
         return connections;
     }
 
+    function buildClusterConnections() {
+        const connections = [];
+        const mid = Math.floor(count / 2);
+        // first half as a tight cluster
+        for (let i = 0; i < mid - 1; i++) {
+            connections.push([i, i + 1]);
+        }
+        // second half as another cluster
+        for (let i = mid; i < count - 1; i++) {
+            connections.push([i, i + 1]);
+        }
+        // a bridge between clusters
+        if (count > 3) {
+            connections.push([0, mid]);
+        }
+        return connections;
+    }
+
+    function buildSpiralConnections() {
+        const connections = [];
+        for (let i = 0; i < count - 2; i++) {
+            connections.push([i, i + 2]);
+        }
+        return connections;
+    }
+
+    function buildWebConnections() {
+        const connections = [];
+        for (let i = 0; i < count; i++) {
+            connections.push([i, (i + 1) % count]);
+            connections.push([i, (i + 2) % count]);
+        }
+        return connections;
+    }
+
     const patterns = [];
 
     patterns.push({
@@ -404,6 +439,27 @@ const CONSTELLATIONS = (() => {
         description: '',
         stars: buildStars(),
         connections: buildRandomConnections()
+    });
+
+    patterns.push({
+        name: 'Cluster Pattern',
+        description: '',
+        stars: buildStars(),
+        connections: buildClusterConnections()
+    });
+
+    patterns.push({
+        name: 'Spiral Pattern',
+        description: '',
+        stars: buildStars(),
+        connections: buildSpiralConnections()
+    });
+
+    patterns.push({
+        name: 'Web Pattern',
+        description: '',
+        stars: buildStars(),
+        connections: buildWebConnections()
     });
 
     return patterns;
