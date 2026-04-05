@@ -270,6 +270,59 @@ const CONSTELLATION_DATA = {
             { x: 480, y: 320, name: "η Boo" }
         ],
         lines: [[0,1], [1,2], [2,3], [3,0]]
+    },
+    'Draco': {
+        description: 'The Dragon',
+        stars: [
+            { x: 200, y: 120, name: "Eltanin" },
+            { x: 240, y: 150, name: "Rastaban" },
+            { x: 280, y: 180, name: "γ Dra" },
+            { x: 320, y: 210, name: "ν Dra" },
+            { x: 360, y: 200, name: "ξ Dra" },
+            { x: 400, y: 180, name: "π Dra" },
+            { x: 440, y: 160, name: "χ Dra" },
+            { x: 480, y: 150, name: "ψ Dra" }
+        ],
+        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6], [6,7]]
+    },
+    'Pegasus': {
+        description: 'The Winged Horse (Great Square)',
+        stars: [
+            { x: 260, y: 260, name: "Markab" },
+            { x: 340, y: 260, name: "Scheat" },
+            { x: 340, y: 340, name: "Algenib" },
+            { x: 260, y: 340, name: "Homam" },
+            { x: 420, y: 260, name: "Enif" },
+            { x: 460, y: 300, name: "ε Peg" },
+            { x: 500, y: 340, name: "ζ Peg" }
+        ],
+        lines: [[0,1], [1,2], [2,3], [3,0], [1,4], [4,5], [5,6]]
+    },
+    'Andromeda': {
+        description: 'The Chained Princess',
+        stars: [
+            { x: 260, y: 420, name: "Alpheratz" },
+            { x: 320, y: 400, name: "δ And" },
+            { x: 380, y: 380, name: "Mirach" },
+            { x: 440, y: 360, name: "γ And" },
+            { x: 500, y: 340, name: "β And" },
+            { x: 560, y: 330, name: "ν And" },
+            { x: 620, y: 320, name: "μ And" }
+        ],
+        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]
+    },
+    'Ophiuchus': {
+        description: 'The Serpent Bearer',
+        stars: [
+            { x: 520, y: 440, name: "Rasalhague" },
+            { x: 560, y: 420, name: "Cebalrai" },
+            { x: 600, y: 440, name: "ζ Oph" },
+            { x: 620, y: 480, name: "η Oph" },
+            { x: 600, y: 520, name: "θ Oph" },
+            { x: 560, y: 540, name: "κ Oph" },
+            { x: 520, y: 520, name: "λ Oph" }
+        ],
+        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6], [6,0]]
     }
 };
 
@@ -588,12 +641,104 @@ const CONSTELLATIONS = (() => {
 })();
 
 /**
- * Get a random constellation from the list
- * @returns {Object} A randomly selected constellation object
+ * Get a random constellation layout based on REAL shapes from CONSTELLATION_DATA
+ * but use the existing navigation links (About, Projects, LinkedIn, GitHub, Kaggle, Contact, etc.)
+ * as the actual stars/labels.
+ *
+ * So: geometry comes from real constellations, content still comes from NAV_LINKS.
  */
 function getRandomConstellation() {
-    const randomIndex = Math.floor(Math.random() * CONSTELLATIONS.length);
-    return CONSTELLATIONS[randomIndex];
+    const names = Object.keys(CONSTELLATION_DATA);
+    const linkCount = NAV_LINKS.length;
+
+    // Prefer only constellations that have at least as many
+    // stars as we have links, so we don't have to reuse positions.
+    const eligibleNames = names.filter((name) => {
+        const data = CONSTELLATION_DATA[name];
+        const starCount = (data.stars || []).length;
+        return starCount >= linkCount;
+    });
+
+    // Helper: when we *do* have to work with fewer stars than links,
+    // select a subset of links in priority order.
+    function getPrioritizedLinks(maxCount) {
+        const preferredOrder = [
+            'About Me',
+            'Projects',
+            'LinkedIn',
+            'GitHub',
+            'Kaggle'
+        ];
+
+        const selected = [];
+
+        // First, take links in preferred order if present.
+        for (const label of preferredOrder) {
+            const match = NAV_LINKS.find((nav) => nav.label === label);
+            if (match && !selected.includes(match)) {
+                selected.push(match);
+                if (selected.length >= maxCount) return selected;
+            }
+        }
+
+        // Then, fill any remaining slots with other links
+        // in their original NAV_LINKS order.
+        for (const nav of NAV_LINKS) {
+            if (!selected.includes(nav)) {
+                selected.push(nav);
+                if (selected.length >= maxCount) break;
+            }
+        }
+
+        return selected;
+    }
+
+    // If we somehow have no real data, fall back to the old
+    // procedural NAV_LINK patterns.
+    if (!names.length) {
+        const fallbackIndex = Math.floor(Math.random() * CONSTELLATIONS.length);
+        return CONSTELLATIONS[fallbackIndex];
+    }
+
+    const chosenPool = eligibleNames.length ? eligibleNames : names;
+    const randomName = chosenPool[Math.floor(Math.random() * chosenPool.length)];
+    const data = CONSTELLATION_DATA[randomName];
+
+    const baseStars = data.stars || [];
+    const baseCount = baseStars.length || 1;
+
+    // If this constellation has enough stars, use all links.
+    // Otherwise, pick a prioritized subset of links.
+    const linksForThisConstellation =
+        baseCount >= linkCount ? [...NAV_LINKS] : getPrioritizedLinks(baseCount);
+
+    const starCount = linksForThisConstellation.length;
+
+    // Assign each selected nav link to a unique star position
+    // (no reuse when baseCount >= starCount).
+    const stars = linksForThisConstellation.map((nav, index) => {
+        const template = baseStars[index % baseCount];
+        return {
+            x: template.x,
+            y: template.y,
+            name: nav.label,
+            label: nav.label,
+            link: nav.link
+        };
+    });
+
+    // Use the real connection pattern, but drop any edges that refer
+    // to star indices beyond our starCount.
+    const connections = (data.lines || [])
+        .filter(([a, b]) => a < starCount && b < starCount)
+        .map(([a, b]) => [a, b]);
+
+    return {
+        name: randomName,
+        description: data.description || '',
+        stars,
+        connections
+    };
 }
 
 /**
@@ -680,12 +825,51 @@ function renderConstellation(constellation, svg) {
     const offsetX = (svgWidth - rawWidth * scale) / 2 - minX * scale;
     const offsetY = (svgHeight - rawHeight * scale) / 2 - minY * scale;
 
-    // Precompute transformed positions so shapes stay exactly the same, just bigger and centered
+    // Precompute transformed positions so shapes are bigger and centered
     const transformedStars = constellation.stars.map((star) => ({
         ...star,
         tx: star.x * scale + offsetX,
         ty: star.y * scale + offsetY
     }));
+
+    // Gently spread out stars so they don't overlap, while
+    // keeping the overall shape and order similar.
+    const MIN_DIST = 60; // minimum distance in SVG units between stars
+    const iterations = 20;
+
+    for (let iter = 0; iter < iterations; iter++) {
+        let movedAny = false;
+        for (let i = 0; i < transformedStars.length; i++) {
+            for (let j = i + 1; j < transformedStars.length; j++) {
+                const a = transformedStars[i];
+                const b = transformedStars[j];
+
+                let dx = b.tx - a.tx;
+                let dy = b.ty - a.ty;
+                let dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
+
+                if (dist < MIN_DIST) {
+                    const overlap = (MIN_DIST - dist) / 2;
+                    dx /= dist;
+                    dy /= dist;
+
+                    a.tx -= dx * overlap;
+                    a.ty -= dy * overlap;
+                    b.tx += dx * overlap;
+                    b.ty += dy * overlap;
+
+                    // Keep stars within the original margin
+                    a.tx = Math.max(margin, Math.min(svgWidth - margin, a.tx));
+                    a.ty = Math.max(margin, Math.min(svgHeight - margin, a.ty));
+                    b.tx = Math.max(margin, Math.min(svgWidth - margin, b.tx));
+                    b.ty = Math.max(margin, Math.min(svgHeight - margin, b.ty));
+
+                    movedAny = true;
+                }
+            }
+        }
+        if (!movedAny) break;
+    }
 
     // Ensure every star participates in at least one connection,
     // and no star has more than two connections.

@@ -211,6 +211,23 @@ body {
     opacity: 0.95;
 }
 
+/* Slightly denser starfield on About & Projects pages */
+.about-page .stars-background,
+.projects-page .stars-background {
+    background-size: 135% 135%;
+}
+
+.about-page .stars-background::before,
+.projects-page .stars-background::before {
+    opacity: 1.15;
+    background-size: 165% 165%;
+}
+
+.about-page .stars-background::after,
+.projects-page .stars-background::after {
+    opacity: 0.9;
+}
+
 /* Extra dense, multi-size stars layered on top */
 .stars-background::before {
     content: '';
@@ -736,7 +753,7 @@ body {
 .page-sucked .projects-container,
 .page-sucked .about-container,
 .page-sucked .footer {
-    animation: pageSuckIntoHole 1s ease-in forwards;
+    animation: pageSuckIntoHole 0.8s ease-out forwards;
     transform-origin: 50% 50%;
 }
 
@@ -748,23 +765,18 @@ body {
 @keyframes pageSuckIntoHole {
     0% {
         opacity: 1;
-        transform: scale(1) translate(0, 0) rotate(0deg);
+        transform: none;
         filter: none;
     }
-    35% {
-        opacity: 0.9;
-        transform: scale(1.05) skewY(4deg) rotate(-8deg);
-        filter: blur(0.5px);
-    }
-    65% {
-        opacity: 0.7;
-        transform: scaleX(0.55) scaleY(1.25) translate(0, -20px) skewY(10deg) rotate(-120deg);
-        filter: blur(2px);
+    50% {
+        opacity: 0.5;
+        transform: none;
+        filter: blur(1px);
     }
     100% {
         opacity: 0;
-        transform: scaleX(0.08) scaleY(1.8) translate(0, -80px) skewY(18deg) rotate(-420deg);
-        filter: blur(5px);
+        transform: none;
+        filter: blur(3px);
     }
 }
 
@@ -783,7 +795,7 @@ body {
     0% {
         top: 2.8rem;
         left: 4rem;
-        transform: translate(0, 0) scale(1) rotate(0deg);
+        transform: translate(0, 0) scale(1);
         box-shadow:
             0 0 18px rgba(157, 78, 221, 0.7),
             0 0 40px rgba(0, 0, 0, 0.9);
@@ -791,15 +803,18 @@ body {
     55% {
         top: 50%;
         left: 4rem;
-        transform: translate(0, -50%) scale(1.7) rotate(140deg);
+        transform: translate(0, -50%) scale(1.9);
+        box-shadow:
+            0 0 70px rgba(194, 191, 240, 0.9),
+            0 0 140px rgba(157, 78, 221, 0.85);
     }
     100% {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(12) rotate(360deg);
+        transform: translate(-50%, -50%) scale(12);
         box-shadow:
-            0 0 120px rgba(0, 0, 0, 1),
-            0 0 200px rgba(0, 0, 0, 1);
+            0 0 180px rgba(194, 191, 240, 1),
+            0 0 260px rgba(157, 78, 221, 0.95);
     }
 }
 
