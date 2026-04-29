@@ -3,12 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('constellationCanvas');
     
     if (canvas) {
-        // Get a random constellation and render it
-        const constellation = getRandomConstellation();
-        renderConstellation(constellation, canvas);
+        // Check if we're in simplified view mode
+        const viewMode = localStorage.getItem('portfolioViewMode');
+        
+        // Only render constellation if in constellation view or if no preference set yet
+        if (!viewMode || viewMode === 'constellation') {
+            // Get a random constellation and render it
+            const constellation = getRandomConstellation();
+            renderConstellation(constellation, canvas);
 
-        // Optional: Log the constellation name for debugging
-        console.log(`Loaded constellation: ${constellation.name}`);
+            // Optional: Log the constellation name for debugging
+            console.log(`Loaded constellation: ${constellation.name}`);
+        }
     }
 
     // Black hole "suck into home" transition

@@ -48,11 +48,31 @@ const projects = [
         year: 'Ongoing',
         x: 600,
         y: 300
+    },
+    {
+        id: 'grow-kasterlee',
+        name: 'Grow Kasterlee',
+        year: '',
+        x: 100,
+        y: 450
+    },
+    {
+        id: 'the-andersons',
+        name: 'The Andersons',
+        year: '',
+        x: 700,
+        y: 450
     }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    initProjectConstellation();
+    // Check if we're in simplified view mode
+    const viewMode = localStorage.getItem('portfolioViewMode');
+    
+    // Only render constellation if in constellation view or if no preference set yet
+    if (!viewMode || viewMode === 'constellation') {
+        initProjectConstellation();
+    }
 });
 
 // Build a constellation similar in style to the homepage one, but for projects

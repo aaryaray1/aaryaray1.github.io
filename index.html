@@ -6,6 +6,7 @@
     <title>Portfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/view-selector.css">
  </head>
 <body class="page-with-stars home-page">
     <div class="stars-background"></div>
@@ -24,6 +25,50 @@
             </ul>
         </div>
     </nav>
+
+    <!-- Simplified Home View Container -->
+    <div id="simplifiedHomeContainer" style="display: none;">
+        <div class="simplified-section">
+            <div class="simplified-header">
+                <h1>Welcome to My Portfolio</h1>
+                <p>Hi, I'm Aarya Ray Chaudhuri - a passionate software developer exploring the cosmos of technology</p>
+            </div>
+
+            <div class="simplified-cards">
+                <a href="about.html" class="simplified-card-link">
+                    <div class="simplified-card">
+                        <h3>Who I Am</h3>
+                        <p>A software developer with a keen interest in Machine Learning, AI, and full-stack development. I love turning ideas into reality through code.</p>
+                    </div>
+                </a>
+
+                <a href="projects.html" class="simplified-card-link">
+                    <div class="simplified-card">
+                        <h3>My Work</h3>
+                        <p>I've built IoT solutions for smart farming, developed full-stack applications, and explored machine learning applications in real-world scenarios.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="simplified-footer-section">
+                <h2>Let's Connect</h2>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/aarya-ray-3b2663270/" target="_blank" class="social-link">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/aaryaray1" target="_blank" class="social-link">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="https://www.kaggle.com/aaryaraychaudhuri" target="_blank" class="social-link">
+                        <i class="fab fa-kaggle"></i> Kaggle
+                    </a>
+                    <a href="assets/cv.pdf" target="_blank" class="social-link">
+                        <i class="fas fa-file-pdf"></i> CV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="constellation-container">
         <div class="hero-text">
@@ -47,6 +92,7 @@
     </footer>
 
     <script src="js/constellations.js"></script>
+    <script src="js/view-selector.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

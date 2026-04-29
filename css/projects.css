@@ -141,6 +141,22 @@
     transform: scale(1.05);
 }
 
+.project-github {
+    display: inline-block;
+    color: var(--light-purple);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.project-github:hover {
+    color: var(--deep-purple);
+    transform: scale(1.2);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .projects-container {
