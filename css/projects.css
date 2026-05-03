@@ -3,10 +3,10 @@
 .projects-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 3.5rem 2.5rem;
+    padding: 3.5rem 2.5rem 6rem 2.5rem;
     position: relative;
     z-index: 50;
-    min-height: calc(100vh - 200px);
+    flex: 1;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -213,7 +213,7 @@
 }
 
 #projectsConstellation {
-    max-width: 125%;
+    max-width: 350%;
     height: auto;
     cursor: crosshair;
     filter: drop-shadow(0 0 24px rgba(194, 191, 240, 0.25));

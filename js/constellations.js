@@ -916,7 +916,7 @@ function renderConstellation(constellation, svg) {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', star.tx);
         circle.setAttribute('cy', star.ty);
-        circle.setAttribute('r', '12');
+        circle.setAttribute('r', '24');
         circle.setAttribute('class', 'constellation-star');
         circle.setAttribute('data-index', index);
         circle.setAttribute('data-link', star.link);
@@ -955,7 +955,7 @@ function renderConstellation(constellation, svg) {
         // Create label text
         const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         label.setAttribute('x', star.tx);
-        label.setAttribute('y', star.ty - 20);
+        label.setAttribute('y', star.ty - 40);
         label.setAttribute('class', 'constellation-label');
         label.setAttribute('data-index', index);
         label.textContent = star.label;
