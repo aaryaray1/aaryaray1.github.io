@@ -31,7 +31,7 @@ function showViewSelectorModal() {
     modal.className = 'view-selector-modal';
     modal.innerHTML = `
         <div class="view-selector-content">
-            <h1>Welcome! 🌌</h1>
+            <h1>Welcome!</h1>
             <p>Choose your preferred way to explore my portfolio</p>
             
             <div class="view-options">
