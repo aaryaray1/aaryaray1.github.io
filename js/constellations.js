@@ -1,329 +1,625 @@
 // Real constellation patterns extracted from official star maps
 // Exact coordinates and line connections from reference star chart
 const CONSTELLATION_DATA = {
-    'Ursa Major': {
-        description: 'The Great Bear (Big Dipper)',
-        stars: [
-            { x: 150, y: 180, name: "Dubhe" },
-            { x: 220, y: 160, name: "Merak" },
-            { x: 280, y: 170, name: "Phecda" },
-            { x: 340, y: 190, name: "Megrez" },
-            { x: 380, y: 260, name: "Alioth" },
-            { x: 420, y: 310, name: "Mizar" },
-            { x: 450, y: 350, name: "Alkaid" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6], [0,4], [1,4]]
-    },
-    'Ursa Minor': {
-        description: 'The Little Bear',
-        stars: [
-            { x: 200, y: 80, name: "Polaris" },
-            { x: 240, y: 100, name: "β UMi" },
-            { x: 260, y: 140, name: "γ UMi" }
-        ],
-        lines: [[0,1], [1,2], [2,0]]
-    },
-    'Cassiopeia': {
-        description: 'The Queen (W-shape)',
-        stars: [
-            { x: 300, y: 140, name: "Schedar" },
-            { x: 340, y: 120, name: "Caph" },
-            { x: 380, y: 150, name: "Gamma" },
-            { x: 410, y: 190, name: "Rucbah" },
-            { x: 350, y: 200, name: "Segin" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,0]]
-    },
-    'Cepheus': {
-        description: 'The King',
-        stars: [
-            { x: 420, y: 100, name: "Alderamin" },
-            { x: 460, y: 110, name: "β Cep" },
-            { x: 490, y: 130, name: "γ Cep" },
-            { x: 480, y: 170, name: "ζ Cep" },
-            { x: 440, y: 160, name: "δ Cep" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,0]]
-    },
-    'Perseus': {
-        description: 'The Hero',
-        stars: [
-            { x: 480, y: 200, name: "Algenib" },
-            { x: 520, y: 180, name: "Algol" },
-            { x: 560, y: 200, name: "γ Per" },
-            { x: 540, y: 250, name: "δ Per" },
-            { x: 500, y: 280, name: "Epsilon" },
-            { x: 460, y: 260, name: "ζ Per" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,0], [1,5]]
-    },
     'Orion': {
         description: 'The Hunter',
         stars: [
-            { x: 500, y: 220, name: "Betelgeuse" },
-            { x: 600, y: 230, name: "Bellatrix" },
-            { x: 530, y: 300, name: "Alnitak" },
-            { x: 570, y: 310, name: "Alnilam" },
-            { x: 610, y: 320, name: "Mintaka" },
-            { x: 510, y: 380, name: "Saiph" },
-            { x: 610, y: 390, name: "Rigel" },
-            { x: 570, y: 340, name: "Sword" }
+            { x: 155.7, y: 73.0, name: "Orion 1" },
+            { x: 136.1, y: 40.0, name: "Orion 2" },
+            { x: 150.3, y: 40.8, name: "Orion 3" },
+            { x: 162.3, y: 76.4, name: "Orion 4" },
+            { x: 148.0, y: 103.8, name: "Orion 5" },
+            { x: 137.3, y: 117.2, name: "Orion 6" },
+            { x: 92.6, y: 123.6, name: "Orion 7" },
+            { x: 47.5, y: 100.8, name: "Orion 8" },
+            { x: 53.0, y: 151.4, name: "Orion 9" },
+            { x: 46.6, y: 147.0, name: "Orion 10" },
+            { x: 42.0, y: 128.0, name: "Orion 11" },
+            { x: 40.0, y: 119.9, name: "Orion 12" },
+            { x: 41.1, y: 108.3, name: "Orion 13" },
+            { x: 49.7, y: 80.6, name: "Orion 14" },
+            { x: 61.9, y: 69.2, name: "Orion 15" },
+            { x: 69.6, y: 68.1, name: "Orion 16" },
+            { x: 76.8, y: 210.9, name: "Orion 17" },
+            { x: 91.6, y: 176.0, name: "Orion 18" },
+            { x: 102.8, y: 163.5, name: "Orion 19" },
+            { x: 107.5, y: 102.1, name: "Orion 20" },
+            { x: 115.8, y: 173.3, name: "Orion 21" },
+            { x: 126.2, y: 219.7, name: "Orion 22" },
+            { x: 109.1, y: 168.9, name: "Orion 23" },
         ],
-        lines: [[0,2], [2,3], [3,4], [4,1], [0,1], [0,5], [1,6], [2,7], [3,7], [4,7]]
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [8, 9], [9, 10], [10, 11], [11, 12], [12, 7], [7, 13], [13, 14], [14, 15], [16, 17], [17, 18], [18, 6], [6, 19], [19, 5], [5, 20], [20, 21], [20, 22], [22, 18]]
     },
-    'Canis Major': {
-        description: 'The Great Dog',
+
+    'Ursa Major': {
+        description: 'The Great Bear (Big Dipper)',
         stars: [
-            { x: 620, y: 350, name: "Sirius" },
-            { x: 660, y: 370, name: "β CMa" },
-            { x: 680, y: 320, name: "γ CMa" },
-            { x: 700, y: 340, name: "δ CMa" }
+            { x: 253.9, y: 76.2, name: "Major 1" },
+            { x: 185.8, y: 47.9, name: "Major 2" },
+            { x: 184.0, y: 80.1, name: "Major 3" },
+            { x: 233.4, y: 96.2, name: "Major 4" },
+            { x: 290.6, y: 82.6, name: "Major 5" },
+            { x: 319.0, y: 88.8, name: "Major 6" },
+            { x: 341.4, y: 122.5, name: "Major 7" },
+            { x: 226.0, y: 131.7, name: "Major 8" },
+            { x: 199.8, y: 219.8, name: "Major 9" },
+            { x: 199.5, y: 229.2, name: "Major 10" },
+            { x: 191.4, y: 151.4, name: "Major 11" },
+            { x: 146.5, y: 169.4, name: "Major 12" },
+            { x: 141.5, y: 160.9, name: "Major 13" },
+            { x: 98.2, y: 40.0, name: "Major 14" },
+            { x: 40.0, y: 54.1, name: "Major 15" },
+            { x: 116.7, y: 64.1, name: "Major 16" },
+            { x: 117.7, y: 94.0, name: "Major 17" },
+            { x: 99.5, y: 108.3, name: "Major 18" },
+            { x: 67.5, y: 130.1, name: "Major 19" },
+            { x: 71.7, y: 135.4, name: "Major 20" },
         ],
-        lines: [[0,1], [1,2], [2,3], [3,0], [0,2]]
+        lines: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [4, 5], [5, 6], [3, 7], [7, 8], [8, 9], [7, 10], [10, 11], [10, 12], [1, 13], [13, 14], [14, 15], [15, 2], [2, 16], [16, 17], [17, 18], [19, 17]]
     },
-    'Canis Minor': {
-        description: 'The Small Dog',
-        stars: [
-            { x: 620, y: 280, name: "Procyon" },
-            { x: 660, y: 270, name: "β CMi" }
-        ],
-        lines: [[0,1]]
-    },
-    'Gemini': {
-        description: 'The Twins',
-        stars: [
-            { x: 650, y: 200, name: "Castor" },
-            { x: 650, y: 270, name: "Pollux" },
-            { x: 680, y: 190, name: "γ Gem" },
-            { x: 680, y: 280, name: "δ Gem" }
-        ],
-        lines: [[0,1], [2,3], [0,2], [1,3]]
-    },
-    'Cancer': {
-        description: 'The Crab',
-        stars: [
-            { x: 620, y: 220, name: "Altarf" },
-            { x: 650, y: 210, name: "β Cnc" },
-            { x: 670, y: 240, name: "θ Cnc" }
-        ],
-        lines: [[0,1], [1,2], [2,0]]
-    },
-    'Leo': {
-        description: 'The Lion (Sickle)',
-        stars: [
-            { x: 640, y: 240, name: "Regulus" },
-            { x: 680, y: 220, name: "Algieba" },
-            { x: 710, y: 200, name: "Gamma" },
-            { x: 720, y: 150, name: "Eta" },
-            { x: 740, y: 280, name: "Denebola" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [0,4], [3,4]]
-    },
-    'Auriga': {
-        description: 'The Charioteer',
-        stars: [
-            { x: 700, y: 100, name: "Capella" },
-            { x: 740, y: 110, name: "β Aur" },
-            { x: 750, y: 150, name: "θ Aur" },
-            { x: 720, y: 170, name: "δ Aur" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
-    'Cygnus': {
-        description: 'The Swan (Northern Cross)',
-        stars: [
-            { x: 380, y: 270, name: "Deneb" },
-            { x: 380, y: 350, name: "Sadr" },
-            { x: 300, y: 350, name: "Albireo" },
-            { x: 460, y: 350, name: "δ Cyg" }
-        ],
-        lines: [[0,1], [1,2], [1,3]]
-    },
-    'Lyra': {
-        description: 'The Harp',
-        stars: [
-            { x: 420, y: 320, name: "Vega" },
-            { x: 460, y: 340, name: "β Lyr" },
-            { x: 450, y: 380, name: "γ Lyr" },
-            { x: 400, y: 360, name: "δ Lyr" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
-    'Aquila': {
-        description: 'The Eagle',
-        stars: [
-            { x: 430, y: 380, name: "Altair" },
-            { x: 400, y: 420, name: "β Aql" },
-            { x: 460, y: 420, name: "γ Aql" }
-        ],
-        lines: [[0,1], [0,2], [1,2]]
-    },
-    'Aquarius': {
-        description: 'The Water Bearer',
-        stars: [
-            { x: 380, y: 480, name: "Sadalmelik" },
-            { x: 420, y: 500, name: "β Aqr" },
-            { x: 400, y: 530, name: "γ Aqr" }
-        ],
-        lines: [[0,1], [1,2]]
-    },
-    'Capricornus': {
-        description: 'The Sea-Goat',
-        stars: [
-            { x: 300, y: 480, name: "Deneb Algedi" },
-            { x: 340, y: 500, name: "β Cap" },
-            { x: 320, y: 540, name: "γ Cap" }
-        ],
-        lines: [[0,1], [1,2], [2,0]]
-    },
-    'Sagittarius': {
-        description: 'The Archer (Teapot)',
-        stars: [
-            { x: 380, y: 520, name: "Kaus Australis" },
-            { x: 410, y: 500, name: "Kaus Media" },
-            { x: 400, y: 490, name: "Kaus Borealis" },
-            { x: 370, y: 540, name: "Ascella" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
-    'Scorpius': {
-        description: 'The Scorpion',
-        stars: [
-            { x: 520, y: 500, name: "Antares" },
-            { x: 550, y: 480, name: "σ Sco" },
-            { x: 570, y: 520, name: "τ Sco" },
-            { x: 540, y: 560, name: "λ Sco" },
-            { x: 510, y: 580, name: "ν Sco" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,4]]
-    },
-    'Libra': {
-        description: 'The Scales',
-        stars: [
-            { x: 480, y: 480, name: "Zubenelgenubi" },
-            { x: 520, y: 460, name: "Zubeneschamali" },
-            { x: 500, y: 500, name: "σ Lib" }
-        ],
-        lines: [[0,1], [1,2], [2,0]]
-    },
-    'Virgo': {
-        description: 'The Virgin',
-        stars: [
-            { x: 580, y: 380, name: "Spica" },
-            { x: 620, y: 360, name: "Gamma" },
-            { x: 610, y: 420, name: "δ Vir" }
-        ],
-        lines: [[0,1], [1,2], [2,0]]
-    },
-    'Aries': {
-        description: 'The Ram',
-        stars: [
-            { x: 250, y: 480, name: "Hamal" },
-            { x: 280, y: 500, name: "Sheratan" },
-            { x: 270, y: 530, name: "Mesarthim" }
-        ],
-        lines: [[0,1], [1,2]]
-    },
-    'Pisces': {
-        description: 'The Fishes',
-        stars: [
-            { x: 220, y: 520, name: "Alrescha" },
-            { x: 250, y: 540, name: "β Psc" }
-        ],
-        lines: [[0,1]]
-    },
-    'Taurus': {
-        description: 'The Bull (V-shape)',
-        stars: [
-            { x: 300, y: 380, name: "Aldebaran" },
-            { x: 320, y: 340, name: "β Tau" },
-            { x: 350, y: 320, name: "γ Tau" }
-        ],
-        lines: [[0,1], [1,2]]
-    },
-    'Hercules': {
-        description: 'The Hero (Keystone)',
-        stars: [
-            { x: 500, y: 400, name: "Ras Algethi" },
-            { x: 540, y: 380, name: "β Her" },
-            { x: 570, y: 410, name: "γ Her" },
-            { x: 540, y: 450, name: "δ Her" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
-    'Corona Borealis': {
-        description: 'The Northern Crown (Arc)',
-        stars: [
-            { x: 480, y: 370, name: "Alphecca" },
-            { x: 450, y: 355, name: "β CrB" },
-            { x: 500, y: 340, name: "γ CrB" },
-            { x: 520, y: 365, name: "δ CrB" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
-    'Boötes': {
-        description: 'The Herdsman (Kite)',
-        stars: [
-            { x: 520, y: 360, name: "Arcturus" },
-            { x: 550, y: 340, name: "β Boo" },
-            { x: 540, y: 300, name: "γ Boo" },
-            { x: 480, y: 320, name: "η Boo" }
-        ],
-        lines: [[0,1], [1,2], [2,3], [3,0]]
-    },
+
     'Draco': {
         description: 'The Dragon',
         stars: [
-            { x: 200, y: 120, name: "Eltanin" },
-            { x: 240, y: 150, name: "Rastaban" },
-            { x: 280, y: 180, name: "γ Dra" },
-            { x: 320, y: 210, name: "ν Dra" },
-            { x: 360, y: 200, name: "ξ Dra" },
-            { x: 400, y: 180, name: "π Dra" },
-            { x: 440, y: 160, name: "χ Dra" },
-            { x: 480, y: 150, name: "ψ Dra" }
+            { x: 299.6, y: 135.2, name: "Draco 1" },
+            { x: 301.7, y: 167.5, name: "Draco 2" },
+            { x: 283.9, y: 162.6, name: "Draco 3" },
+            { x: 285.1, y: 145.4, name: "Draco 4" },
+            { x: 353.3, y: 70.4, name: "Draco 5" },
+            { x: 318.1, y: 48.4, name: "Draco 6" },
+            { x: 269.2, y: 82.1, name: "Draco 7" },
+            { x: 238.8, y: 107.3, name: "Draco 8" },
+            { x: 223.7, y: 125.0, name: "Draco 9" },
+            { x: 198.6, y: 122.6, name: "Draco 10" },
+            { x: 143.9, y: 90.1, name: "Draco 11" },
+            { x: 82.2, y: 57.7, name: "Draco 12" },
+            { x: 40.0, y: 60.4, name: "Draco 13" },
+            { x: 318.3, y: 40.0, name: "Draco 14" },
+            { x: 377.4, y: 54.8, name: "Draco 15" },
         ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6], [6,7]]
+        lines: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [5, 13], [4, 14]]
     },
+
     'Pegasus': {
         description: 'The Winged Horse (Great Square)',
         stars: [
-            { x: 260, y: 260, name: "Markab" },
-            { x: 340, y: 260, name: "Scheat" },
-            { x: 340, y: 340, name: "Algenib" },
-            { x: 260, y: 340, name: "Homam" },
-            { x: 420, y: 260, name: "Enif" },
-            { x: 460, y: 300, name: "ε Peg" },
-            { x: 500, y: 340, name: "ζ Peg" }
+            { x: 76.2, y: 40.0, name: "Pegasus 1" },
+            { x: 122.6, y: 57.7, name: "Pegasus 2" },
+            { x: 151.7, y: 70.6, name: "Pegasus 3" },
+            { x: 242.4, y: 64.5, name: "Pegasus 4" },
+            { x: 249.2, y: 148.0, name: "Pegasus 5" },
+            { x: 153.1, y: 147.8, name: "Pegasus 6" },
+            { x: 127.7, y: 166.0, name: "Pegasus 7" },
+            { x: 120.4, y: 174.1, name: "Pegasus 8" },
+            { x: 76.5, y: 201.9, name: "Pegasus 9" },
+            { x: 40.0, y: 179.8, name: "Pegasus 10" },
+            { x: 132.4, y: 91.5, name: "Pegasus 11" },
+            { x: 127.5, y: 97.7, name: "Pegasus 12" },
+            { x: 72.0, y: 87.0, name: "Pegasus 13" },
+            { x: 40.6, y: 85.2, name: "Pegasus 14" },
         ],
-        lines: [[0,1], [1,2], [2,3], [3,0], [1,4], [4,5], [5,6]]
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [5, 2], [2, 10], [10, 11], [11, 12], [12, 13]]
     },
+
     'Andromeda': {
         description: 'The Chained Princess',
         stars: [
-            { x: 260, y: 420, name: "Alpheratz" },
-            { x: 320, y: 400, name: "δ And" },
-            { x: 380, y: 380, name: "Mirach" },
-            { x: 440, y: 360, name: "γ And" },
-            { x: 500, y: 340, name: "β And" },
-            { x: 560, y: 330, name: "ν And" },
-            { x: 620, y: 320, name: "μ And" }
+            { x: 255.0, y: 77.8, name: "Andromeda 1" },
+            { x: 191.0, y: 118.0, name: "Andromeda 2" },
+            { x: 155.1, y: 146.6, name: "Andromeda 3" },
+            { x: 118.5, y: 157.2, name: "Andromeda 4" },
+            { x: 176.2, y: 191.3, name: "Andromeda 5" },
+            { x: 164.5, y: 186.2, name: "Andromeda 6" },
+            { x: 154.1, y: 155.9, name: "Andromeda 7" },
+            { x: 152.2, y: 129.5, name: "Andromeda 8" },
+            { x: 82.8, y: 72.2, name: "Andromeda 9" },
+            { x: 40.0, y: 77.8, name: "Andromeda 10" },
+            { x: 85.5, y: 65.8, name: "Andromeda 11" },
+            { x: 82.1, y: 53.0, name: "Andromeda 12" },
+            { x: 175.6, y: 100.8, name: "Andromeda 13" },
+            { x: 167.4, y: 85.3, name: "Andromeda 14" },
+            { x: 190.7, y: 48.3, name: "Andromeda 15" },
+            { x: 224.3, y: 40.0, name: "Andromeda 16" },
+            { x: 92.1, y: 53.2, name: "Andromeda 17" },
         ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]
+        lines: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6], [6, 2], [2, 7], [7, 8], [8, 9], [8, 10], [10, 11], [1, 12], [12, 13], [13, 14], [14, 15], [10, 16]]
     },
+
     'Ophiuchus': {
         description: 'The Serpent Bearer',
         stars: [
-            { x: 520, y: 440, name: "Rasalhague" },
-            { x: 560, y: 420, name: "Cebalrai" },
-            { x: 600, y: 440, name: "ζ Oph" },
-            { x: 620, y: 480, name: "η Oph" },
-            { x: 600, y: 520, name: "θ Oph" },
-            { x: 560, y: 540, name: "κ Oph" },
-            { x: 520, y: 520, name: "λ Oph" }
+            { x: 195.0, y: 174.0, name: "Ophiuchus 1" },
+            { x: 178.5, y: 99.1, name: "Ophiuchus 2" },
+            { x: 172.0, y: 88.0, name: "Ophiuchus 3" },
+            { x: 159.3, y: 40.0, name: "Ophiuchus 4" },
+            { x: 104.2, y: 59.1, name: "Ophiuchus 5" },
+            { x: 64.5, y: 103.5, name: "Ophiuchus 6" },
+            { x: 40.0, y: 137.5, name: "Ophiuchus 7" },
+            { x: 45.9, y: 143.5, name: "Ophiuchus 8" },
+            { x: 73.8, y: 178.8, name: "Ophiuchus 9" },
+            { x: 123.0, y: 209.7, name: "Ophiuchus 10" },
+            { x: 64.9, y: 215.0, name: "Ophiuchus 11" },
+            { x: 58.8, y: 226.1, name: "Ophiuchus 12" },
+            { x: 54.4, y: 235.6, name: "Ophiuchus 13" },
+            { x: 56.6, y: 256.0, name: "Ophiuchus 14" },
+            { x: 140.2, y: 265.4, name: "Ophiuchus 15" },
+            { x: 148.1, y: 294.6, name: "Ophiuchus 16" },
         ],
-        lines: [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6], [6,0]]
-    }
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [4, 8], [8, 10], [10, 11], [11, 12], [12, 13], [2, 9], [9, 14], [14, 15]]
+    },
+
+    'Leo': {
+        description: 'The Lion',
+        stars: [
+            { x: 71.9, y: 124.2, name: "Leo 1" },
+            { x: 70.4, y: 95.5, name: "Leo 2" },
+            { x: 88.4, y: 77.0, name: "Leo 3" },
+            { x: 165.1, y: 72.9, name: "Leo 4" },
+            { x: 214.6, y: 108.6, name: "Leo 5" },
+            { x: 165.3, y: 103.5, name: "Leo 6" },
+            { x: 83.7, y: 55.5, name: "Leo 7" },
+            { x: 49.8, y: 40.0, name: "Leo 8" },
+            { x: 40.0, y: 53.4, name: "Leo 9" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [2, 6], [6, 7], [7, 8]]
+    },
+
+    'Hydra': {
+        description: 'The Water Snake (largest constellation)',
+        stars: [
+            { x: 53.5, y: 40.0, name: "Hydra 1" },
+            { x: 55.9, y: 43.5, name: "Hydra 2" },
+            { x: 48.2, y: 58.1, name: "Hydra 3" },
+            { x: 41.6, y: 58.5, name: "Hydra 4" },
+            { x: 40.0, y: 44.3, name: "Hydra 5" },
+            { x: 66.2, y: 42.8, name: "Hydra 6" },
+            { x: 94.2, y: 64.6, name: "Hydra 7" },
+            { x: 131.9, y: 85.4, name: "Hydra 8" },
+            { x: 113.8, y: 130.5, name: "Hydra 9" },
+            { x: 149.0, y: 167.6, name: "Hydra 10" },
+            { x: 177.3, y: 152.6, name: "Hydra 11" },
+            { x: 200.2, y: 179.5, name: "Hydra 12" },
+            { x: 234.9, y: 175.7, name: "Hydra 13" },
+            { x: 299.0, y: 269.7, name: "Hydra 14" },
+            { x: 328.4, y: 282.0, name: "Hydra 15" },
+            { x: 455.4, y: 217.5, name: "Hydra 16" },
+            { x: 525.5, y: 238.6, name: "Hydra 17" },
+            { x: 590.4, y: 246.3, name: "Hydra 18" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17]]
+    },
+
+    'Cassiopeia': {
+        description: 'The Queen (W-shape)',
+        stars: [
+            { x: 118.8, y: 40.0, name: "Cassiopeia 1" },
+            { x: 97.4, y: 60.6, name: "Cassiopeia 2" },
+            { x: 75.6, y: 57.7, name: "Cassiopeia 3" },
+            { x: 63.5, y: 82.8, name: "Cassiopeia 4" },
+            { x: 40.0, y: 67.1, name: "Cassiopeia 5" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4]]
+    },
+
+    'Ursa Minor': {
+        description: 'The Little Bear',
+        stars: [
+            { x: 54.4, y: 108.8, name: "Minor 1" },
+            { x: 63.4, y: 121.1, name: "Minor 2" },
+            { x: 48.1, y: 144.6, name: "Minor 3" },
+            { x: 40.0, y: 130.7, name: "Minor 4" },
+            { x: 71.1, y: 83.4, name: "Minor 5" },
+            { x: 83.6, y: 56.1, name: "Minor 6" },
+            { x: 229.3, y: 40.0, name: "Minor 7" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [4, 5], [5, 6]]
+    },
+
+    'Cepheus': {
+        description: 'The King',
+        stars: [
+            { x: 40.0, y: 127.8, name: "Cepheus 1" },
+            { x: 50.5, y: 134.8, name: "Cepheus 2" },
+            { x: 72.9, y: 130.3, name: "Cepheus 3" },
+            { x: 89.6, y: 153.1, name: "Cepheus 4" },
+            { x: 110.8, y: 163.5, name: "Cepheus 5" },
+            { x: 108.0, y: 156.6, name: "Cepheus 6" },
+            { x: 120.3, y: 155.3, name: "Cepheus 7" },
+            { x: 134.0, y: 108.6, name: "Cepheus 8" },
+            { x: 167.3, y: 40.0, name: "Cepheus 9" },
+            { x: 79.6, y: 82.4, name: "Cepheus 10" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 2], [9, 7]]
+    },
+
+    'Perseus': {
+        description: 'The Hero',
+        stars: [
+            { x: 168.3, y: 181.6, name: "Perseus 1" },
+            { x: 178.8, y: 184.1, name: "Perseus 2" },
+            { x: 183.9, y: 160.6, name: "Perseus 3" },
+            { x: 182.7, y: 135.3, name: "Perseus 4" },
+            { x: 169.2, y: 119.9, name: "Perseus 5" },
+            { x: 166.8, y: 88.6, name: "Perseus 6" },
+            { x: 160.0, y: 86.2, name: "Perseus 7" },
+            { x: 147.0, y: 76.2, name: "Perseus 8" },
+            { x: 126.3, y: 54.3, name: "Perseus 9" },
+            { x: 111.3, y: 40.0, name: "Perseus 10" },
+            { x: 115.1, y: 58.8, name: "Perseus 11" },
+            { x: 130.8, y: 77.7, name: "Perseus 12" },
+            { x: 131.3, y: 106.2, name: "Perseus 13" },
+            { x: 129.9, y: 129.6, name: "Perseus 14" },
+            { x: 133.2, y: 137.7, name: "Perseus 15" },
+            { x: 126.7, y: 142.3, name: "Perseus 16" },
+            { x: 119.9, y: 137.4, name: "Perseus 17" },
+            { x: 120.8, y: 129.2, name: "Perseus 18" },
+            { x: 192.0, y: 73.3, name: "Perseus 19" },
+            { x: 200.8, y: 84.9, name: "Perseus 20" },
+            { x: 194.2, y: 89.1, name: "Perseus 21" },
+            { x: 104.4, y: 80.0, name: "Perseus 22" },
+            { x: 40.0, y: 71.2, name: "Perseus 23" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 13], [18, 19], [19, 20], [20, 5], [11, 21], [21, 22]]
+    },
+
+    'Cygnus': {
+        description: 'The Swan (Northern Cross)',
+        stars: [
+            { x: 172.4, y: 178.8, name: "Cygnus 1" },
+            { x: 141.9, y: 156.4, name: "Cygnus 2" },
+            { x: 114.5, y: 118.7, name: "Cygnus 3" },
+            { x: 71.9, y: 89.4, name: "Cygnus 4" },
+            { x: 54.4, y: 49.8, name: "Cygnus 5" },
+            { x: 40.0, y: 40.0, name: "Cygnus 6" },
+            { x: 136.4, y: 88.5, name: "Cygnus 7" },
+            { x: 84.8, y: 149.7, name: "Cygnus 8" },
+            { x: 55.6, y: 192.5, name: "Cygnus 9" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [6, 2], [2, 7], [7, 8]]
+    },
+
+    'Lyra': {
+        description: 'The Harp',
+        stars: [
+            { x: 49.4, y: 52.0, name: "Lyra 1" },
+            { x: 49.0, y: 40.0, name: "Lyra 2" },
+            { x: 40.0, y: 45.0, name: "Lyra 3" },
+            { x: 61.2, y: 56.3, name: "Lyra 4" },
+            { x: 66.5, y: 81.5, name: "Lyra 5" },
+            { x: 55.8, y: 77.5, name: "Lyra 6" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 0], [0, 3], [3, 4], [4, 5], [5, 0]]
+    },
+
+    'Aquila': {
+        description: 'The Eagle',
+        stars: [
+            { x: 101.1, y: 59.5, name: "Aquila 1" },
+            { x: 107.8, y: 70.0, name: "Aquila 2" },
+            { x: 114.6, y: 84.7, name: "Aquila 3" },
+            { x: 138.5, y: 128.1, name: "Aquila 4" },
+            { x: 110.3, y: 117.1, name: "Aquila 5" },
+            { x: 70.0, y: 104.5, name: "Aquila 6" },
+            { x: 40.0, y: 40.0, name: "Aquila 7" },
+            { x: 41.3, y: 152.5, name: "Aquila 8" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 1], [1, 5], [5, 7]]
+    },
+
+    'Scorpius': {
+        description: 'The Scorpion',
+        stars: [
+            { x: 40.0, y: 77.9, name: "Scorpius 1" },
+            { x: 41.9, y: 56.9, name: "Scorpius 2" },
+            { x: 48.3, y: 40.0, name: "Scorpius 3" },
+            { x: 68.0, y: 74.7, name: "Scorpius 4" },
+            { x: 78.3, y: 79.8, name: "Scorpius 5" },
+            { x: 86.4, y: 90.5, name: "Scorpius 6" },
+            { x: 104.3, y: 126.9, name: "Scorpius 7" },
+            { x: 106.5, y: 149.5, name: "Scorpius 8" },
+            { x: 109.9, y: 175.3, name: "Scorpius 9" },
+            { x: 131.9, y: 180.6, name: "Scorpius 10" },
+            { x: 163.5, y: 179.2, name: "Scorpius 11" },
+            { x: 176.3, y: 161.9, name: "Scorpius 12" },
+            { x: 170.0, y: 155.3, name: "Scorpius 13" },
+            { x: 158.8, y: 143.8, name: "Scorpius 14" },
+        ],
+        lines: [[0, 1], [1, 2], [1, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13]]
+    },
+
+    'Sagittarius': {
+        description: 'The Archer (Teapot)',
+        stars: [
+            { x: 55.7, y: 164.8, name: "Sagittarius 1" },
+            { x: 64.4, y: 150.6, name: "Sagittarius 2" },
+            { x: 60.2, y: 123.2, name: "Sagittarius 3" },
+            { x: 69.4, y: 96.8, name: "Sagittarius 4" },
+            { x: 50.6, y: 70.6, name: "Sagittarius 5" },
+            { x: 142.1, y: 211.0, name: "Sagittarius 6" },
+            { x: 143.7, y: 188.0, name: "Sagittarius 7" },
+            { x: 115.5, y: 123.6, name: "Sagittarius 8" },
+            { x: 92.9, y: 106.2, name: "Sagittarius 9" },
+            { x: 185.4, y: 195.5, name: "Sagittarius 10" },
+            { x: 191.4, y: 155.9, name: "Sagittarius 11" },
+            { x: 186.2, y: 102.1, name: "Sagittarius 12" },
+            { x: 160.8, y: 93.6, name: "Sagittarius 13" },
+            { x: 145.6, y: 91.3, name: "Sagittarius 14" },
+            { x: 132.7, y: 95.8, name: "Sagittarius 15" },
+            { x: 105.7, y: 102.1, name: "Sagittarius 16" },
+            { x: 40.0, y: 126.8, name: "Sagittarius 17" },
+            { x: 121.2, y: 110.3, name: "Sagittarius 18" },
+            { x: 118.2, y: 74.7, name: "Sagittarius 19" },
+            { x: 125.0, y: 70.4, name: "Sagittarius 20" },
+            { x: 135.4, y: 58.0, name: "Sagittarius 21" },
+            { x: 140.8, y: 51.4, name: "Sagittarius 22" },
+            { x: 140.9, y: 40.0, name: "Sagittarius 23" },
+            { x: 109.0, y: 70.9, name: "Sagittarius 24" },
+            { x: 104.3, y: 80.7, name: "Sagittarius 25" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [5, 6], [6, 7], [7, 8], [8, 3], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 8], [8, 2], [2, 16], [16, 1], [1, 7], [7, 17], [17, 15], [15, 18], [18, 19], [19, 20], [20, 21], [21, 22], [18, 23], [23, 24], [24, 15]]
+    },
+
+    'Gemini': {
+        description: 'The Twins',
+        stars: [
+            { x: 40.0, y: 96.3, name: "Gemini 1" },
+            { x: 51.2, y: 96.2, name: "Gemini 2" },
+            { x: 80.1, y: 80.5, name: "Gemini 3" },
+            { x: 117.7, y: 49.9, name: "Gemini 4" },
+            { x: 150.1, y: 40.0, name: "Gemini 5" },
+            { x: 164.9, y: 63.2, name: "Gemini 6" },
+            { x: 151.9, y: 70.0, name: "Gemini 7" },
+            { x: 130.1, y: 99.4, name: "Gemini 8" },
+            { x: 108.0, y: 107.9, name: "Gemini 9" },
+            { x: 71.5, y: 132.9, name: "Gemini 10" },
+            { x: 82.0, y: 154.0, name: "Gemini 11" },
+            { x: 127.3, y: 132.1, name: "Gemini 12" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [7, 11]]
+    },
+
+    'Taurus': {
+        description: 'The Bull',
+        stars: [
+            { x: 233.0, y: 84.8, name: "Taurus 1" },
+            { x: 143.3, y: 112.6, name: "Taurus 2" },
+            { x: 132.8, y: 116.4, name: "Taurus 3" },
+            { x: 119.9, y: 117.9, name: "Taurus 4" },
+            { x: 124.5, y: 106.4, name: "Taurus 5" },
+            { x: 132.7, y: 96.6, name: "Taurus 6" },
+            { x: 216.5, y: 40.0, name: "Taurus 7" },
+            { x: 92.1, y: 136.7, name: "Taurus 8" },
+            { x: 43.4, y: 153.2, name: "Taurus 9" },
+            { x: 95.7, y: 175.7, name: "Taurus 10" },
+            { x: 40.0, y: 157.5, name: "Taurus 11" },
+            { x: 57.5, y: 209.2, name: "Taurus 12" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [3, 7], [7, 8], [8, 9], [8, 10], [10, 11]]
+    },
+
+    'Canis Major': {
+        description: 'The Great Dog',
+        stars: [
+            { x: 43.3, y: 75.5, name: "Major 1" },
+            { x: 74.5, y: 68.1, name: "Major 2" },
+            { x: 99.3, y: 110.8, name: "Major 3" },
+            { x: 106.7, y: 126.1, name: "Major 4" },
+            { x: 97.4, y: 135.4, name: "Major 5" },
+            { x: 93.2, y: 141.6, name: "Major 6" },
+            { x: 40.0, y: 148.1, name: "Major 7" },
+            { x: 128.5, y: 143.6, name: "Major 8" },
+            { x: 89.7, y: 70.1, name: "Major 9" },
+            { x: 100.3, y: 61.6, name: "Major 10" },
+            { x: 87.0, y: 40.0, name: "Major 11" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [7, 3], [1, 8], [8, 9], [9, 10], [10, 8]]
+    },
+
+    'Auriga': {
+        description: 'The Charioteer',
+        stars: [
+            { x: 110.6, y: 96.0, name: "Auriga 1" },
+            { x: 62.2, y: 89.7, name: "Auriga 2" },
+            { x: 50.8, y: 118.3, name: "Auriga 3" },
+            { x: 40.0, y: 166.7, name: "Auriga 4" },
+            { x: 73.1, y: 194.1, name: "Auriga 5" },
+            { x: 110.8, y: 142.4, name: "Auriga 6" },
+            { x: 110.6, y: 40.0, name: "Auriga 7" },
+            { x: 45.6, y: 102.8, name: "Auriga 8" },
+            { x: 46.2, y: 119.3, name: "Auriga 9" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 6], [6, 1], [1, 7], [7, 8]]
+    },
+
+    'Boötes': {
+        description: 'The Herdsman (Kite)',
+        stars: [
+            { x: 40.0, y: 246.4, name: "Boötes 1" },
+            { x: 49.4, y: 240.7, name: "Boötes 2" },
+            { x: 76.0, y: 236.0, name: "Boötes 3" },
+            { x: 96.5, y: 168.9, name: "Boötes 4" },
+            { x: 96.8, y: 121.3, name: "Boötes 5" },
+            { x: 134.7, y: 108.8, name: "Boötes 6" },
+            { x: 151.8, y: 151.2, name: "Boötes 7" },
+            { x: 113.2, y: 188.7, name: "Boötes 8" },
+            { x: 108.3, y: 268.7, name: "Boötes 9" },
+            { x: 76.9, y: 74.6, name: "Boötes 10" },
+            { x: 73.2, y: 40.4, name: "Boötes 11" },
+            { x: 88.1, y: 40.0, name: "Boötes 12" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 2], [2, 8], [4, 9], [9, 10], [10, 11], [11, 9]]
+    },
+
+    'Hercules': {
+        description: 'The Hero (Keystone)',
+        stars: [
+            { x: 77.0, y: 203.0, name: "Hercules 1" },
+            { x: 87.4, y: 188.9, name: "Hercules 2" },
+            { x: 101.4, y: 128.3, name: "Hercules 3" },
+            { x: 103.5, y: 84.3, name: "Hercules 4" },
+            { x: 92.3, y: 63.3, name: "Hercules 5" },
+            { x: 74.2, y: 40.0, name: "Hercules 6" },
+            { x: 60.3, y: 48.3, name: "Hercules 7" },
+            { x: 40.0, y: 63.2, name: "Hercules 8" },
+            { x: 125.4, y: 132.3, name: "Hercules 9" },
+            { x: 144.1, y: 97.0, name: "Hercules 10" },
+            { x: 196.1, y: 94.4, name: "Hercules 11" },
+            { x: 155.0, y: 95.0, name: "Hercules 12" },
+            { x: 144.1, y: 168.8, name: "Hercules 13" },
+            { x: 183.8, y: 151.6, name: "Hercules 14" },
+            { x: 198.1, y: 142.4, name: "Hercules 15" },
+            { x: 210.4, y: 145.3, name: "Hercules 16" },
+            { x: 143.6, y: 231.5, name: "Hercules 17" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [2, 8], [3, 9], [10, 11], [11, 9], [9, 8], [8, 12], [12, 13], [13, 14], [14, 15], [16, 1]]
+    },
+
+    'Corona Borealis': {
+        description: 'The Northern Crown',
+        stars: [
+            { x: 46.8, y: 40.0, name: "Borealis 1" },
+            { x: 40.0, y: 53.5, name: "Borealis 2" },
+            { x: 49.1, y: 67.9, name: "Borealis 3" },
+            { x: 59.7, y: 70.4, name: "Borealis 4" },
+            { x: 68.8, y: 71.7, name: "Borealis 5" },
+            { x: 79.4, y: 66.9, name: "Borealis 6" },
+            { x: 84.5, y: 49.0, name: "Borealis 7" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]
+    },
+
+    'Virgo': {
+        description: 'The Virgin',
+        stars: [
+            { x: 40.0, y: 66.6, name: "Virgo 1" },
+            { x: 47.3, y: 95.2, name: "Virgo 2" },
+            { x: 91.1, y: 109.8, name: "Virgo 3" },
+            { x: 123.7, y: 114.5, name: "Virgo 4" },
+            { x: 166.1, y: 139.0, name: "Virgo 5" },
+            { x: 189.0, y: 172.7, name: "Virgo 6" },
+            { x: 265.2, y: 141.8, name: "Virgo 7" },
+            { x: 305.8, y: 139.7, name: "Virgo 8" },
+            { x: 154.5, y: 40.0, name: "Virgo 9" },
+            { x: 144.6, y: 85.4, name: "Virgo 10" },
+            { x: 203.2, y: 109.3, name: "Virgo 11" },
+            { x: 243.7, y: 96.5, name: "Virgo 12" },
+            { x: 310.6, y: 94.4, name: "Virgo 13" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [8, 9], [9, 3], [4, 10], [10, 11], [11, 12]]
+    },
+
+    'Canis Minor': {
+        description: 'The Small Dog',
+        stars: [
+            { x: 58.1, y: 58.4, name: "Minor 1" },
+            { x: 40.0, y: 40.0, name: "Minor 2" },
+        ],
+        lines: [[0, 1]]
+    },
+
+    'Cancer': {
+        description: 'The Crab',
+        stars: [
+            { x: 99.9, y: 141.4, name: "Cancer 1" },
+            { x: 80.2, y: 103.7, name: "Cancer 2" },
+            { x: 78.2, y: 83.8, name: "Cancer 3" },
+            { x: 83.0, y: 40.0, name: "Cancer 4" },
+            { x: 40.0, y: 157.5, name: "Cancer 5" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [1, 4]]
+    },
+
+    'Aquarius': {
+        description: 'The Water Bearer',
+        stars: [
+            { x: 40.0, y: 105.2, name: "Aquarius 1" },
+            { x: 47.4, y: 102.2, name: "Aquarius 2" },
+            { x: 105.2, y: 81.7, name: "Aquarius 3" },
+            { x: 156.0, y: 50.2, name: "Aquarius 4" },
+            { x: 179.6, y: 56.6, name: "Aquarius 5" },
+            { x: 190.2, y: 48.4, name: "Aquarius 6" },
+            { x: 199.9, y: 49.0, name: "Aquarius 7" },
+            { x: 225.5, y: 93.7, name: "Aquarius 8" },
+            { x: 263.1, y: 103.4, name: "Aquarius 9" },
+            { x: 250.5, y: 175.3, name: "Aquarius 10" },
+            { x: 157.0, y: 131.5, name: "Aquarius 11" },
+            { x: 172.4, y: 95.0, name: "Aquarius 12" },
+            { x: 184.9, y: 40.0, name: "Aquarius 13" },
+            { x: 270.6, y: 168.9, name: "Aquarius 14" },
+            { x: 298.5, y: 155.2, name: "Aquarius 15" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [2, 10], [3, 11], [5, 12], [13, 8], [8, 14]]
+    },
+
+    'Capricornus': {
+        description: 'The Sea-Goat',
+        stars: [
+            { x: 40.0, y: 40.0, name: "Capricornus 1" },
+            { x: 44.8, y: 53.6, name: "Capricornus 2" },
+            { x: 55.9, y: 71.8, name: "Capricornus 3" },
+            { x: 80.4, y: 116.6, name: "Capricornus 4" },
+            { x: 88.6, y: 126.5, name: "Capricornus 5" },
+            { x: 138.1, y: 99.4, name: "Capricornus 6" },
+            { x: 167.0, y: 61.7, name: "Capricornus 7" },
+            { x: 157.2, y: 64.9, name: "Capricornus 8" },
+            { x: 131.8, y: 66.0, name: "Capricornus 9" },
+            { x: 108.6, y: 68.3, name: "Capricornus 10" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 0]]
+    },
+
+    'Libra': {
+        description: 'The Scales',
+        stars: [
+            { x: 58.5, y: 135.4, name: "Libra 1" },
+            { x: 40.0, y: 80.0, name: "Libra 2" },
+            { x: 76.7, y: 40.0, name: "Libra 3" },
+            { x: 102.7, y: 72.4, name: "Libra 4" },
+            { x: 104.8, y: 152.5, name: "Libra 5" },
+            { x: 107.1, y: 162.4, name: "Libra 6" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [1, 3]]
+    },
+
+    'Aries': {
+        description: 'The Ram',
+        stars: [
+            { x: 118.1, y: 40.0, name: "Aries 1" },
+            { x: 58.9, y: 62.8, name: "Aries 2" },
+            { x: 41.5, y: 78.7, name: "Aries 3" },
+            { x: 40.0, y: 87.8, name: "Aries 4" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 3]]
+    },
+
+    'Pisces': {
+        description: 'The Fishes',
+        stars: [
+            { x: 232.2, y: 73.0, name: "Pisces 1" },
+            { x: 229.1, y: 40.0, name: "Pisces 2" },
+            { x: 240.7, y: 57.0, name: "Pisces 3" },
+            { x: 228.8, y: 94.3, name: "Pisces 4" },
+            { x: 258.5, y: 128.5, name: "Pisces 5" },
+            { x: 279.0, y: 165.6, name: "Pisces 6" },
+            { x: 303.7, y: 204.0, name: "Pisces 7" },
+            { x: 291.1, y: 201.4, name: "Pisces 8" },
+            { x: 273.2, y: 187.6, name: "Pisces 9" },
+            { x: 256.5, y: 183.7, name: "Pisces 10" },
+            { x: 232.2, y: 175.1, name: "Pisces 11" },
+            { x: 216.2, y: 173.2, name: "Pisces 12" },
+            { x: 195.1, y: 175.0, name: "Pisces 13" },
+            { x: 122.0, y: 179.4, name: "Pisces 14" },
+            { x: 93.4, y: 186.8, name: "Pisces 15" },
+            { x: 75.7, y: 182.3, name: "Pisces 16" },
+            { x: 64.4, y: 188.2, name: "Pisces 17" },
+            { x: 59.7, y: 200.8, name: "Pisces 18" },
+            { x: 74.1, y: 213.0, name: "Pisces 19" },
+            { x: 96.5, y: 209.9, name: "Pisces 20" },
+            { x: 102.9, y: 199.6, name: "Pisces 21" },
+            { x: 40.0, y: 197.6, name: "Pisces 22" },
+        ],
+        lines: [[0, 1], [1, 2], [2, 0], [0, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18], [18, 19], [19, 20], [20, 14], [17, 21]]
+    },
 };
 
 // Navigation links
@@ -332,7 +628,7 @@ const NAV_LINKS = [
     { link: "projects.html", label: "Projects" },
     { link: "assets/cv.pdf", label: "CV" },
     { link: "#", label: "Contact" },
-    { link: "https://www.linkedin.com/in/aarya-ray-3b2663270/", label: "LinkedIn" },
+    { link: "https://www.linkedin.com/in/aarya-ray/", label: "LinkedIn" },
     { link: "https://www.kaggle.com/aaryaraychaudhuri", label: "Kaggle" },
     { link: "https://github.com/aaryaray1", label: "GitHub" }
 ];
@@ -641,51 +937,86 @@ const CONSTELLATIONS = (() => {
 })();
 
 /**
- * Get a random constellation layout based on REAL shapes from CONSTELLATION_DATA
- * but use the existing navigation links (About, Projects, LinkedIn, GitHub, Kaggle, Contact, etc.)
- * as the actual stars/labels.
+ * Pick a random REAL constellation from CONSTELLATION_DATA and map an arbitrary
+ * list of "items" (nav links, project cards, etc.) onto its star positions.
  *
- * So: geometry comes from real constellations, content still comes from NAV_LINKS.
+ * So: geometry + name come from a real night-sky constellation, the content
+ * (labels/links/click targets) comes from whatever `items` array is passed in.
+ *
+ * @param {Array<{label: string, [key: string]: any}>} items - things to place on stars
+ * @param {Object} [opts]
+ * @param {string[]} [opts.priorityLabels] - preferred order when items must be trimmed
+ * @returns {{name: string, description: string, stars: Array, connections: Array}}
  */
-function getRandomConstellation() {
+function pickConstellationForItems(items, opts = {}) {
     const names = Object.keys(CONSTELLATION_DATA);
-    const linkCount = NAV_LINKS.length;
+    const itemCount = items.length;
 
-    // Prefer only constellations that have at least as many
-    // stars as we have links, so we don't have to reuse positions.
+    // If we somehow have no real data, fall back to the old procedural patterns.
+    if (!names.length) {
+        const fallbackIndex = Math.floor(Math.random() * CONSTELLATIONS.length);
+        return CONSTELLATIONS[fallbackIndex];
+    }
+
+    // Prefer constellations with at least as many stars as we have items,
+    // so every item gets its own point and no shape has to be truncated.
     const eligibleNames = names.filter((name) => {
-        const data = CONSTELLATION_DATA[name];
-        const starCount = (data.stars || []).length;
-        return starCount >= linkCount;
+        const starCount = (CONSTELLATION_DATA[name].stars || []).length;
+        return starCount >= itemCount;
     });
 
-    // Helper: when we *do* have to work with fewer stars than links,
-    // select a subset of links in priority order.
-    function getPrioritizedLinks(maxCount) {
-        const preferredOrder = [
-            'About Me',
-            'Projects',
-            'LinkedIn',
-            'GitHub',
-            'Kaggle'
-        ];
+    // Nothing big enough exists (item list longer than any real constellation
+    // we know) - fall back to whichever constellation(s) have the most stars,
+    // so we lose as little of the shape/content as possible.
+    let chosenPool = eligibleNames;
+    if (!chosenPool.length) {
+        const maxStars = Math.max(
+            ...names.map((name) => (CONSTELLATION_DATA[name].stars || []).length)
+        );
+        chosenPool = names.filter(
+            (name) => (CONSTELLATION_DATA[name].stars || []).length === maxStars
+        );
+    }
 
+    // With several items to place, steer away from extremely elongated real
+    // shapes (e.g. Draco's long thin tail) - they leave little room for
+    // labels once stretched across a wide/short area. Only applies when a
+    // roomier alternative actually exists.
+    if (chosenPool.length > 1 && itemCount >= 7) {
+        const roomy = chosenPool.filter((name) => {
+            const stars = (CONSTELLATION_DATA[name].stars || []).slice(0, itemCount);
+            const xs = stars.map((s) => s.x);
+            const ys = stars.map((s) => s.y);
+            const w = Math.max(...xs) - Math.min(...xs) || 1;
+            const h = Math.max(...ys) - Math.min(...ys) || 1;
+            return Math.max(w, h) / Math.min(w, h) <= 3.5;
+        });
+        if (roomy.length) chosenPool = roomy;
+    }
+
+    const randomName = chosenPool[Math.floor(Math.random() * chosenPool.length)];
+    const data = CONSTELLATION_DATA[randomName];
+
+    const baseStars = data.stars || [];
+    const baseCount = baseStars.length || 1;
+
+    // Helper: when the constellation has fewer stars than items, select a
+    // prioritized subset of items rather than dropping them off the end.
+    function getPrioritizedItems(maxCount) {
+        const preferredOrder = opts.priorityLabels || [];
         const selected = [];
 
-        // First, take links in preferred order if present.
         for (const label of preferredOrder) {
-            const match = NAV_LINKS.find((nav) => nav.label === label);
+            const match = items.find((item) => item.label === label);
             if (match && !selected.includes(match)) {
                 selected.push(match);
                 if (selected.length >= maxCount) return selected;
             }
         }
 
-        // Then, fill any remaining slots with other links
-        // in their original NAV_LINKS order.
-        for (const nav of NAV_LINKS) {
-            if (!selected.includes(nav)) {
-                selected.push(nav);
+        for (const item of items) {
+            if (!selected.includes(item)) {
+                selected.push(item);
                 if (selected.length >= maxCount) break;
             }
         }
@@ -693,45 +1024,37 @@ function getRandomConstellation() {
         return selected;
     }
 
-    // If we somehow have no real data, fall back to the old
-    // procedural NAV_LINK patterns.
-    if (!names.length) {
-        const fallbackIndex = Math.floor(Math.random() * CONSTELLATIONS.length);
-        return CONSTELLATIONS[fallbackIndex];
-    }
+    const itemsForThisConstellation =
+        baseCount >= itemCount ? items : getPrioritizedItems(baseCount);
 
-    const chosenPool = eligibleNames.length ? eligibleNames : names;
-    const randomName = chosenPool[Math.floor(Math.random() * chosenPool.length)];
-    const data = CONSTELLATION_DATA[randomName];
-
-    const baseStars = data.stars || [];
-    const baseCount = baseStars.length || 1;
-
-    // If this constellation has enough stars, use all links.
-    // Otherwise, pick a prioritized subset of links.
-    const linksForThisConstellation =
-        baseCount >= linkCount ? [...NAV_LINKS] : getPrioritizedLinks(baseCount);
-
-    const starCount = linksForThisConstellation.length;
-
-    // Assign each selected nav link to a unique star position
-    // (no reuse when baseCount >= starCount).
-    const stars = linksForThisConstellation.map((nav, index) => {
-        const template = baseStars[index % baseCount];
+    // Always render the constellation's full real star pattern - the same
+    // name always looks like the same shape, whether it's carrying 7 nav
+    // links or 9 projects. Items sit on the first stars; any real stars
+    // left over still render as small unlabeled points so the outline
+    // stays complete instead of getting cut short.
+    const stars = baseStars.map((template, index) => {
+        const item = itemsForThisConstellation[index];
+        if (item) {
+            return {
+                ...item,
+                x: template.x,
+                y: template.y,
+                name: item.label,
+                label: item.label,
+                decorative: false
+            };
+        }
         return {
             x: template.x,
             y: template.y,
-            name: nav.label,
-            label: nav.label,
-            link: nav.link
+            name: template.name || '',
+            label: '',
+            decorative: true
         };
     });
 
-    // Use the real connection pattern, but drop any edges that refer
-    // to star indices beyond our starCount.
-    const connections = (data.lines || [])
-        .filter(([a, b]) => a < starCount && b < starCount)
-        .map(([a, b]) => [a, b]);
+    // Every real connection renders - the full outline always shows.
+    const connections = (data.lines || []).map(([a, b]) => [a, b]);
 
     return {
         name: randomName,
@@ -742,11 +1065,50 @@ function getRandomConstellation() {
 }
 
 /**
+ * Get a random real constellation using the site's nav links (About, Projects,
+ * LinkedIn, GitHub, Kaggle, Contact, CV) as the stars. Used on the home page.
+ */
+function getRandomConstellation() {
+    return pickConstellationForItems(NAV_LINKS, {
+        priorityLabels: ['About Me', 'Projects', 'LinkedIn', 'GitHub', 'Kaggle']
+    });
+}
+
+/**
+ * Friendly, human-readable line describing a chosen constellation, e.g.
+ * "Orion — The Hunter". Falls back gracefully if no description exists.
+ */
+function describeConstellation(constellation) {
+    if (!constellation || !constellation.name) return '';
+    return constellation.description
+        ? `${constellation.name} — ${constellation.description}`
+        : constellation.name;
+}
+
+/**
+ * Shorten a star's on-screen caption at a word boundary where possible, so
+ * long project names ("Good Times Music Blog") don't run into neighboring
+ * stars. The full label is still used for the click target / project modal.
+ */
+function truncateLabel(text, maxChars = 18) {
+    if (!text || text.length <= maxChars) return text;
+    const cut = text.slice(0, maxChars);
+    const lastSpace = cut.lastIndexOf(' ');
+    const trimmed = lastSpace > maxChars * 0.5 ? cut.slice(0, lastSpace) : cut;
+    return `${trimmed.trimEnd()}…`;
+}
+
+/**
  * Render constellation on SVG canvas with improved visuals
  * @param {Object} constellation - Constellation object with stars and connections
  * @param {SVGElement} svg - SVG element to render on
+ * @param {Object} [options]
+ * @param {Function} [options.onStarClick] - custom click handler (star, index) => void.
+ *   Defaults to navigating/opening `star.link` (used for the home page nav constellation).
  */
-function renderConstellation(constellation, svg) {
+function renderConstellation(constellation, svg, options = {}) {
+    const { onStarClick } = options;
+
     // Clear existing content
     svg.innerHTML = '';
 
@@ -815,8 +1177,18 @@ function renderConstellation(constellation, svg) {
     const rawWidth = maxX - minX || 1;
     const rawHeight = maxY - minY || 1;
 
+    // Longest (post-truncation) label on screen, in characters - used to
+    // keep both the outer margin and inter-star spacing wide enough that
+    // captions never run off the canvas edge or into one another.
+    const longestLabel = constellation.stars.reduce(
+        (max, star) => Math.max(max, truncateLabel(star.label || '').length),
+        0
+    );
+    const labelHalfWidth = (longestLabel * 5.2) + 16; // ~half a caption's width, in SVG units
+
     // Scale up and center the constellation within the SVG, with a margin
-    const margin = 60;
+    // wide enough that even an edge star's caption stays on-canvas.
+    const margin = Math.max(48, labelHalfWidth);
     const scale = Math.min(
         (svgWidth - 2 * margin) / rawWidth,
         (svgHeight - 2 * margin) / rawHeight
@@ -832,10 +1204,20 @@ function renderConstellation(constellation, svg) {
         ty: star.y * scale + offsetY
     }));
 
-    // Gently spread out stars so they don't overlap, while
-    // keeping the overall shape and order similar.
-    const MIN_DIST = 60; // minimum distance in SVG units between stars
-    const iterations = 20;
+    // Gently spread out stars so they don't overlap. Each star only needs
+    // as much personal space as its OWN caption requires - a plain
+    // (unlabeled) decorative star needs just enough to clear its circle,
+    // while a labeled star needs room for its text. Using a per-star half
+    // -space (rather than one flat distance for every pair) means a
+    // tightly-clustered real cluster of decorative stars stays tight and
+    // recognizable instead of being blown apart to match the widest
+    // caption in the whole shape.
+    const CIRCLE_HALF_SPACE = 32;
+    const starHalfSpace = transformedStars.map((star) => {
+        if (!star.label) return CIRCLE_HALF_SPACE;
+        return Math.max(CIRCLE_HALF_SPACE, truncateLabel(star.label).length * 5.2 + 16);
+    });
+    const iterations = 60;
 
     for (let iter = 0; iter < iterations; iter++) {
         let movedAny = false;
@@ -843,13 +1225,14 @@ function renderConstellation(constellation, svg) {
             for (let j = i + 1; j < transformedStars.length; j++) {
                 const a = transformedStars[i];
                 const b = transformedStars[j];
+                const pairMinDist = starHalfSpace[i] + starHalfSpace[j];
 
                 let dx = b.tx - a.tx;
                 let dy = b.ty - a.ty;
                 let dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
 
-                if (dist < MIN_DIST) {
-                    const overlap = (MIN_DIST - dist) / 2;
+                if (dist < pairMinDist) {
+                    const overlap = (pairMinDist - dist) / 2;
                     dx /= dist;
                     dy /= dist;
 
@@ -905,62 +1288,109 @@ function renderConstellation(constellation, svg) {
     const starsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     starsGroup.setAttribute('class', 'stars-group');
 
+    // Decide which side (above/below) each label sits on based on its
+    // closest neighboring star, rather than array order - two stars that
+    // happen to land near each other (regardless of index parity) end up
+    // on opposite sides instead of both defaulting to the same one.
+    const labelBelowFlags = transformedStars.map((star, i) => {
+        let nearest = null;
+        let nearestDist = Infinity;
+        transformedStars.forEach((other, j) => {
+            if (i === j) return;
+            const d = Math.hypot(other.tx - star.tx, other.ty - star.ty);
+            if (d < nearestDist) {
+                nearestDist = d;
+                nearest = other;
+            }
+        });
+        if (!nearest) return i % 2 === 1;
+        // Put the label on the side away from the closest neighbor.
+        if (Math.abs(nearest.ty - star.ty) < 8) return i % 2 === 1; // roughly level - fall back to alternating
+        return nearest.ty < star.ty;
+    });
+
     // Draw stars
     transformedStars.forEach((star, index) => {
+        const isDecorative = !!star.decorative || !star.label;
+
         // Create a group for this star and its label
         const starGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        starGroup.setAttribute('class', 'star-group');
-        starGroup.style.cursor = star.link ? 'pointer' : 'default';
+        starGroup.setAttribute('class', isDecorative ? 'star-group star-group-decorative' : 'star-group');
+        starGroup.style.cursor = !isDecorative && (onStarClick || star.link) ? 'pointer' : 'default';
 
-        // Create the star circle
+        // Create the star circle - decorative (unused, real) stars render
+        // small and dim, just enough to complete the true outline, without
+        // competing for attention with the actual clickable stars.
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', star.tx);
         circle.setAttribute('cy', star.ty);
-        circle.setAttribute('r', '24');
-        circle.setAttribute('class', 'constellation-star');
+        circle.setAttribute('r', isDecorative ? '7' : '24');
+        circle.setAttribute(
+            'class',
+            isDecorative ? 'constellation-star constellation-star-decorative' : 'constellation-star'
+        );
         circle.setAttribute('data-index', index);
-        circle.setAttribute('data-link', star.link);
+        if (star.link) circle.setAttribute('data-link', star.link);
         circle.style.animationDelay = `${index * 0.15}s`;
 
-        // Add click handler
-        circle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (star.link) {
-                // Check if it's an external link (LinkedIn, Kaggle, GitHub)
-                if (star.link.startsWith('http')) {
-                    window.open(star.link, '_blank');
-                } else {
-                    window.location.href = star.link;
+        // Native tooltip: the item label when there is one, otherwise the
+        // real star's own name (a little "hidden detail" on hover).
+        const titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        titleEl.textContent = star.label || star.name || '';
+        circle.appendChild(titleEl);
+
+        if (!isDecorative) {
+            // Add click handler
+            circle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (onStarClick) {
+                    onStarClick(star, index);
+                    return;
                 }
-            }
-        });
+                if (star.link) {
+                    // Check if it's an external link (LinkedIn, Kaggle, GitHub)
+                    if (star.link.startsWith('http')) {
+                        window.open(star.link, '_blank');
+                    } else {
+                        window.location.href = star.link;
+                    }
+                }
+            });
 
-        // Add hover effect to show label
-        circle.addEventListener('mouseenter', () => {
-            const label = starGroup.querySelector('.constellation-label');
-            if (label) {
-                label.classList.add('visible');
-            }
-        });
+            // Add hover effect to show label
+            circle.addEventListener('mouseenter', () => {
+                const label = starGroup.querySelector('.constellation-label');
+                if (label) {
+                    label.classList.add('visible');
+                }
+            });
 
-        circle.addEventListener('mouseleave', () => {
-            const label = starGroup.querySelector('.constellation-label');
-            if (label) {
-                label.classList.remove('visible');
-            }
-        });
+            circle.addEventListener('mouseleave', () => {
+                const label = starGroup.querySelector('.constellation-label');
+                if (label) {
+                    label.classList.remove('visible');
+                }
+            });
+        }
 
         starGroup.appendChild(circle);
 
-        // Create label text
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', star.tx);
-        label.setAttribute('y', star.ty - 40);
-        label.setAttribute('class', 'constellation-label');
-        label.setAttribute('data-index', index);
-        label.textContent = star.label;
+        if (!isDecorative) {
+            // Create label text. Placed above or below depending on where
+            // this star's closest neighbor is, so nearby stars' captions
+            // land on opposite sides instead of colliding.
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            const labelBelow = labelBelowFlags[index];
+            label.setAttribute('x', star.tx);
+            label.setAttribute('y', labelBelow ? star.ty + 46 : star.ty - 40);
+            label.setAttribute('class', 'constellation-label');
+            label.classList.toggle('label-below', labelBelow);
+            label.setAttribute('data-index', index);
+            label.textContent = truncateLabel(star.label);
 
-        starGroup.appendChild(label);
+            starGroup.appendChild(label);
+        }
+
         starsGroup.appendChild(starGroup);
     });
 

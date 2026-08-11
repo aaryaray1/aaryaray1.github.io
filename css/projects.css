@@ -179,6 +179,11 @@
     .project-header h3 {
         font-size: 1.25rem;
     }
+
+    #projectsConstellation {
+        height: 50vh;
+        width: 100%;
+    }
 }
 
 /* Animations for project cards */
@@ -203,6 +208,7 @@
 /* Constellation View */
 .constellation-view {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 2rem 0;
@@ -213,10 +219,13 @@
 }
 
 #projectsConstellation {
-    max-width: 350%;
+    width: 128%;
+    max-width: 1750px;
     height: auto;
     cursor: crosshair;
-    filter: drop-shadow(0 0 24px rgba(194, 191, 240, 0.25));
+    /* Static glow, not animated - see #constellationCanvas for why. */
+    filter: drop-shadow(0 0 44px rgba(194, 191, 240, 0.55)) drop-shadow(0 0 88px rgba(154, 78, 221, 0.35));
+    animation: fadeInUp 1.2s ease-out 0.2s backwards;
 }
 
 /* Project Modal */

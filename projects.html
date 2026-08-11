@@ -31,11 +31,12 @@
     <main class="projects-container">
         <div class="projects-header">
             <h2>My Projects</h2>
-            <p style="opacity: 0.8;">Click on a star to explore each project</p>
+            <p id="projectsSubtitle" style="opacity: 0.8;">Click on a star to explore each project</p>
         </div>
 
         <div class="constellation-view">
             <svg id="projectsConstellation" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet"></svg>
+            <p class="sky-label" id="skyLabel"></p>
         </div>
 
         <div class="projects-grid" style="display: none;">
@@ -206,7 +207,7 @@
             <a href="index.html" class="footer-link">Home</a>
             <a href="about.html" class="footer-link">About Me</a>
             <a href="projects.html" class="footer-link">Projects</a>
-            <a href="https://www.linkedin.com/in/aarya-ray-3b2663270/" class="footer-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://www.linkedin.com/in/aarya-ray/" class="footer-link" target="_blank"><i class="fab fa-linkedin"></i></a>
             <a href="https://github.com/aaryaray1" class="footer-link" target="_blank"><i class="fab fa-github"></i></a>
             <a href="https://www.kaggle.com/aaryaraychaudhuri" class="footer-link" target="_blank"><i class="fab fa-kaggle"></i></a>
             <a href="assets/cv.pdf" class="footer-link" target="_blank">CV</a>
@@ -214,6 +215,7 @@
         <p>&copy; 2026 Aarya Ray Chaudhuri. All rights reserved.</p>
     </footer>
 
+    <script src="js/constellations.js"></script>
     <script src="js/main.js"></script>
     <script src="js/view-selector.js"></script>
     <script src="js/projects.js"></script>

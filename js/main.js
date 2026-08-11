@@ -8,12 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Only render constellation if in constellation view or if no preference set yet
         if (!viewMode || viewMode === 'constellation') {
-            // Get a random constellation and render it
+            // Get a random real night-sky constellation and render it
             const constellation = getRandomConstellation();
             renderConstellation(constellation, canvas);
 
-            // Optional: Log the constellation name for debugging
-            console.log(`Loaded constellation: ${constellation.name}`);
+            // Let visitors know which real constellation they're looking at
+            const skyLabel = document.getElementById('skyLabel');
+            if (skyLabel) {
+                skyLabel.textContent = describeConstellation(constellation);
+                requestAnimationFrame(() => skyLabel.classList.add('visible'));
+            }
         }
     }
 

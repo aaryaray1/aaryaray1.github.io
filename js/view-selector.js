@@ -121,7 +121,7 @@ function loadConstellationView() {
         // Show projects constellation
         const constellationView = document.querySelector('.constellation-view');
         if (constellationView) {
-            constellationView.style.display = 'block';
+            constellationView.style.display = 'flex';
             // Re-render if needed
             const svg = document.getElementById('projectsConstellation');
             if (svg && svg.children.length === 0) {
@@ -132,6 +132,7 @@ function loadConstellationView() {
         if (gridView) {
             gridView.style.display = 'none';
         }
+        setProjectsSubtitle(VIEW_MODES.CONSTELLATION);
     }
 }
 
@@ -162,11 +163,25 @@ function loadSimplifiedView() {
         if (gridView) {
             gridView.style.display = 'grid';
         }
+        setProjectsSubtitle(VIEW_MODES.SIMPLIFIED);
     } else if (currentPage === 'about') {
         // About page doesn't have a view selector, but we can still notify
         // that simplified view is active
         document.body.classList.add('simplified-view-active');
     }
+}
+
+/**
+ * Update the projects page subheading so it describes whichever view is
+ * actually on screen (stars vs. tiles).
+ */
+function setProjectsSubtitle(viewMode) {
+    const subtitle = document.getElementById('projectsSubtitle');
+    if (!subtitle) return;
+
+    subtitle.textContent = viewMode === VIEW_MODES.SIMPLIFIED
+        ? 'Click on a tile to explore each project'
+        : 'Click on a star to explore each project';
 }
 
 /**
