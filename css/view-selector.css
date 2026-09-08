@@ -72,8 +72,8 @@
 }
 
 .view-option.selected {
-    border-color: var(--violet-400);
-    background: rgba(106, 71, 170, 0.2);
+    border-color: var(--mauve);
+    background: rgba(142, 91, 146, 0.22);
 }
 
 .view-option input {
@@ -87,7 +87,7 @@
     width: 34px;
     height: 34px;
     margin-bottom: 1.1rem;
-    color: var(--violet-200);
+    color: var(--lavender);
     opacity: 0.75;
     transition: opacity 0.3s var(--ease);
 }
@@ -124,9 +124,9 @@
 
 .view-selector-buttons button {
     padding: 0.7rem 2rem;
-    border: 1px solid var(--violet-400);
+    border: 1px solid var(--mauve-deep);
     border-radius: var(--radius-pill);
-    background: rgba(157, 78, 221, 0.18);
+    background: rgba(142, 91, 146, 0.22);
     color: var(--ink);
     font-family: var(--font-mono);
     font-size: var(--t-micro);
@@ -137,7 +137,7 @@
 }
 
 .view-selector-buttons button:hover {
-    background: rgba(157, 78, 221, 0.34);
+    background: rgba(163, 104, 168, 0.38);
     transform: translateY(-2px);
 }
 
@@ -166,7 +166,7 @@ body.modal-open {
     border: 1px solid var(--hairline-2);
     border-radius: 50%;
     background: rgba(12, 9, 26, 0.6);
-    color: var(--violet-200);
+    color: var(--lavender);
     cursor: pointer;
     z-index: 100;
     backdrop-filter: blur(10px);
@@ -181,8 +181,8 @@ body.modal-open {
 }
 
 .view-toggle-btn:hover {
-    border-color: var(--violet-400);
-    background: rgba(106, 71, 170, 0.28);
+    border-color: var(--mauve);
+    background: rgba(142, 91, 146, 0.3);
     color: #fff;
 }
 
