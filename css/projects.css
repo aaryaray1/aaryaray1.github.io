@@ -1,248 +1,167 @@
-/* Projects Page Styling */
+/* ==========================================================================
+   Projects page - constellation view, tile view, and the project dialog.
+   Tokens and typography come from styles.css.
+   ========================================================================== */
 
 .projects-container {
-    max-width: 1200px;
+    max-width: 1180px;
+    width: 100%;
     margin: 0 auto;
-    padding: 3.5rem 2.5rem 6rem 2.5rem;
+    padding: var(--block) var(--gutter) calc(var(--block) + 1rem);
     position: relative;
     z-index: 50;
     flex: 1;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .projects-header {
     text-align: center;
-    margin-bottom: 4rem;
-    animation: fadeInDown 0.8s ease-out;
+    margin-bottom: var(--block);
+    animation: riseIn 0.8s var(--ease) both;
 }
 
 .projects-header h2 {
-    font-size: 4rem;
-    background: linear-gradient(135deg, var(--light-purple), var(--deep-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
+    font-size: var(--t-h2);
+    margin-bottom: 0.9rem;
 }
 
-.projects-header p {
-    font-size: 1.25rem;
-    color: var(--text-color);
-    opacity: 0.8;
+.projects-header .lede {
+    margin: 0 auto;
 }
+
+/* --------------------------------------------------------------------------
+   Constellation view
+   -------------------------------------------------------------------------- */
+
+.constellation-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0 0;
+    animation: riseIn 0.9s var(--ease) 0.12s both;
+}
+
+/* This page is not a single-screen flex column like the home page, so the
+   constellation gets an explicit height instead of filling leftover space.
+   Nine labelled stars need the room. */
+#projectsConstellation {
+    cursor: crosshair;
+    flex: none;
+    height: clamp(340px, 52vh, 660px);
+}
+
+/* --------------------------------------------------------------------------
+   Tile view
+   -------------------------------------------------------------------------- */
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2.5rem;
-    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(1.25rem, 2.4vw, 1.85rem);
+    animation: riseIn 0.9s var(--ease) 0.12s both;
 }
 
 .project-card {
-    background: linear-gradient(135deg, rgba(106, 71, 170, 0.1), rgba(194, 191, 240, 0.05));
-    border: 1px solid rgba(194, 191, 240, 0.2);
-    border-radius: 12px;
-    padding: 2rem;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 2.6vw, 2rem);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    background: var(--surface);
     backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.project-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(194, 191, 240, 0.1), transparent);
-    transition: left 0.6s ease;
-}
-
-.project-card:hover::before {
-    left: 100%;
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease),
+                box-shadow 0.4s var(--ease);
 }
 
 .project-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--deep-purple);
-    box-shadow: 0 15px 40px rgba(154, 78, 221, 0.2),
-                0 0 30px rgba(106, 71, 170, 0.15);
-}
-
-.project-card:hover .project-header h3 {
-    color: var(--light-purple);
+    transform: translateY(-4px);
+    border-color: var(--hairline-2);
+    box-shadow: var(--shadow);
 }
 
 .project-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
 }
 
 .project-header h3 {
-    font-size: 2.1rem;
-    color: var(--deep-purple);
-    transition: color 0.3s ease;
-    letter-spacing: 0.5px;
+    font-size: var(--t-h3);
     margin: 0;
 }
 
 .project-year {
-    font-size: 1rem;
-    color: var(--light-purple);
-    opacity: 0.7;
-    padding: 0.25rem 0.75rem;
-    background: rgba(194, 191, 240, 0.1);
-    border-radius: 20px;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet-200);
+    opacity: 0.6;
     white-space: nowrap;
 }
 
 .project-description {
-    color: var(--text-color);
-    line-height: 1.7;
+    flex: 1;
+    color: var(--ink-2);
+    font-size: var(--t-small);
+    line-height: 1.75;
     margin-bottom: 1.5rem;
-    opacity: 0.9;
-    position: relative;
-    z-index: 1;
-    font-size: 1.2rem;
 }
 
 .project-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    position: relative;
-    z-index: 1;
+    gap: 0.4rem;
 }
 
 .tech-tag {
     display: inline-block;
-    background: rgba(154, 78, 221, 0.15);
-    border: 1px solid var(--deep-purple);
-    color: var(--light-purple);
-    padding: 0.4rem 0.9rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: default;
-}
-
-.tech-tag:hover {
-    background: rgba(154, 78, 221, 0.3);
-    border-color: var(--light-purple);
-    transform: scale(1.05);
+    padding: 0.28rem 0.7rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    background: rgba(157, 78, 221, 0.1);
+    color: var(--violet-200);
+    font-family: var(--font-mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.03em;
+    opacity: 0.9;
 }
 
 .project-github {
-    display: inline-block;
-    color: var(--light-purple);
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
+    align-self: flex-start;
+    margin-top: 1.35rem;
+    color: var(--violet-200);
+    font-size: 1.15rem;
     text-decoration: none;
-    margin-top: 1rem;
-    position: relative;
-    z-index: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
 }
 
 .project-github:hover {
-    color: var(--deep-purple);
-    transform: scale(1.2);
+    opacity: 1;
+    color: #fff;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .projects-container {
-        padding: 2rem 1rem;
-    }
+/* --------------------------------------------------------------------------
+   Project dialog (opened from a star)
+   -------------------------------------------------------------------------- */
 
-    .projects-header h2 {
-        font-size: 2rem;
-    }
-
-    .projects-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    .project-card {
-        padding: 1.5rem;
-    }
-
-    .project-header h3 {
-        font-size: 1.25rem;
-    }
-
-    #projectsConstellation {
-        height: 50vh;
-        width: 100%;
-    }
-}
-
-/* Animations for project cards */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.project-card:nth-child(1) { animation-delay: 0.1s; }
-.project-card:nth-child(2) { animation-delay: 0.2s; }
-.project-card:nth-child(3) { animation-delay: 0.3s; }
-.project-card:nth-child(4) { animation-delay: 0.4s; }
-.project-card:nth-child(5) { animation-delay: 0.5s; }
-.project-card:nth-child(6) { animation-delay: 0.6s; }
-
-/* Constellation View */
-.constellation-view {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem 0;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    animation: fadeInUp 0.8s ease-out 0.2s backwards;
-}
-
-#projectsConstellation {
-    width: 128%;
-    max-width: 1750px;
-    height: auto;
-    cursor: crosshair;
-    /* Static glow, not animated - see #constellationCanvas for why. */
-    filter: drop-shadow(0 0 44px rgba(194, 191, 240, 0.55)) drop-shadow(0 0 88px rgba(154, 78, 221, 0.35));
-    animation: fadeInUp 1.2s ease-out 0.2s backwards;
-}
-
-/* Project Modal */
 .project-modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    inset: 0;
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    padding: var(--gutter);
+    background: rgba(2, 1, 8, 0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(5px);
+    transition: opacity 0.28s var(--ease);
 }
 
 .project-modal.active {
@@ -250,139 +169,132 @@
 }
 
 .project-modal-content {
-    background: linear-gradient(135deg, rgba(31, 36, 33, 0.95), rgba(106, 71, 170, 0.15));
-    border: 1px solid rgba(194, 191, 240, 0.3);
-    border-radius: 12px;
-    padding: 2.5rem;
-    max-width: 600px;
+    position: relative;
+    width: min(600px, 100%);
     max-height: 85vh;
     overflow-y: auto;
-    position: relative;
-    animation: modalSlideIn 0.3s ease-out;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 40px rgba(194, 191, 240, 0.2);
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+    border: 1px solid var(--hairline-2);
+    border-radius: var(--radius);
+    background: var(--surface-solid);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    animation: modalRise 0.32s var(--ease);
 }
 
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+@keyframes modalRise {
+    from { opacity: 0; transform: translateY(16px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
 }
 
 .project-modal-content h3 {
-    font-size: 2rem;
-    color: var(--light-purple);
+    font-size: var(--t-h3);
     margin-bottom: 0.5rem;
-    letter-spacing: 1px;
+    padding-right: 2.5rem;
 }
 
 .modal-year {
-    display: inline-block;
-    font-size: 0.9rem;
-    color: var(--deep-purple);
-    opacity: 0.8;
+    display: block;
     margin-bottom: 1.5rem;
-    padding: 0.3rem 0.8rem;
-    background: rgba(194, 191, 240, 0.1);
-    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--violet-200);
+    opacity: 0.6;
 }
 
 .modal-description {
-    color: var(--text-color);
+    color: var(--ink-2);
+    font-size: var(--t-small);
     line-height: 1.8;
-    margin-bottom: 1.5rem;
-    opacity: 0.95;
-    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
 }
 
 .modal-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-}
-
-.modal-tech .tech-tag {
-    background: rgba(154, 78, 221, 0.2);
-    border: 1px solid var(--deep-purple);
+    gap: 0.4rem;
+    margin-bottom: 1.75rem;
 }
 
 .project-modal-github {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--light-purple), var(--deep-purple));
-    border: none;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--hairline-2);
     border-radius: 50%;
-    color: #000;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    color: var(--violet-200);
+    font-size: 1.15rem;
     text-decoration: none;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease),
+                border-color 0.3s var(--ease);
 }
 
 .project-modal-github:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(194, 191, 240, 0.5);
+    background: rgba(157, 78, 221, 0.2);
+    border-color: var(--violet-400);
+    color: #fff;
 }
 
 .modal-close {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(194, 191, 240, 0.1);
-    border: 1px solid var(--deep-purple);
-    color: var(--light-purple);
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--hairline);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--violet-200);
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease),
+                border-color 0.25s var(--ease);
 }
 
 .modal-close:hover {
-    background: var(--deep-purple);
+    background: rgba(157, 78, 221, 0.22);
+    border-color: var(--hairline-2);
     color: #fff;
-    transform: rotate(90deg);
 }
 
-/* Scrollbar styling for modal */
+/* Scrollbar inside the dialog */
 .project-modal-content::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .project-modal-content::-webkit-scrollbar-track {
-    background: rgba(194, 191, 240, 0.05);
-    border-radius: 10px;
+    background: transparent;
 }
 
 .project-modal-content::-webkit-scrollbar-thumb {
-    background: rgba(194, 191, 240, 0.3);
-    border-radius: 10px;
+    background: rgba(194, 191, 240, 0.22);
+    border-radius: 999px;
 }
 
 .project-modal-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(194, 191, 240, 0.5);
+    background: rgba(194, 191, 240, 0.4);
 }
 
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
 @media (max-width: 768px) {
-    .project-modal-content {
-        max-width: 90%;
-        padding: 2rem 1.5rem;
+    .projects-grid {
+        grid-template-columns: 1fr;
     }
 
-    .project-modal-content h3 {
-        font-size: 1.5rem;
+    .project-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
     }
 }

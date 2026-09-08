@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Simple HTTP Server for Portfolio Website
-Run this script to host your portfolio locally on your server laptop
-"""
 
 import http.server
 import socketserver

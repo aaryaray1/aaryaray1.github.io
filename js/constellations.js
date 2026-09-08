@@ -948,6 +948,62 @@ const CONSTELLATIONS = (() => {
  * @param {string[]} [opts.priorityLabels] - preferred order when items must be trimmed
  * @returns {{name: string, description: string, stars: Array, connections: Array}}
  */
+/**
+ * Choose `count` stars that are spread across the figure, so the captions they
+ * carry have room to breathe.
+ *
+ * Farthest-point sampling: start from the star furthest from the centre (a
+ * limb tip, which reads well), then repeatedly take whichever remaining star is
+ * furthest from everything already chosen. The result is returned in reading
+ * order - top to bottom, then left to right - so the items land in a sensible
+ * sequence rather than a scattered one.
+ */
+function pickSpreadIndices(stars, count) {
+    const total = stars.length;
+    if (count >= total) return stars.map((star, index) => index);
+    if (count <= 0) return [];
+
+    const cx = stars.reduce((sum, star) => sum + star.x, 0) / total;
+    const cy = stars.reduce((sum, star) => sum + star.y, 0) / total;
+
+    let seed = 0;
+    let seedDist = -1;
+    stars.forEach((star, index) => {
+        const d = Math.hypot(star.x - cx, star.y - cy);
+        if (d > seedDist) {
+            seedDist = d;
+            seed = index;
+        }
+    });
+
+    const chosen = [seed];
+    const best = stars.map((star) => Math.hypot(star.x - stars[seed].x, star.y - stars[seed].y));
+    best[seed] = -1;
+
+    while (chosen.length < count) {
+        let pick = -1;
+        let pickDist = -1;
+        for (let i = 0; i < total; i++) {
+            if (best[i] > pickDist) {
+                pickDist = best[i];
+                pick = i;
+            }
+        }
+        if (pick < 0) break;
+
+        chosen.push(pick);
+        best[pick] = -1;
+        for (let i = 0; i < total; i++) {
+            if (best[i] < 0) continue;
+            const d = Math.hypot(stars[i].x - stars[pick].x, stars[i].y - stars[pick].y);
+            if (d < best[i]) best[i] = d;
+        }
+    }
+
+    // Reading order, so item 1 is not at the bottom of the figure.
+    return chosen.sort((a, b) => (stars[a].y - stars[b].y) || (stars[a].x - stars[b].x));
+}
+
 function pickConstellationForItems(items, opts = {}) {
     const names = Object.keys(CONSTELLATION_DATA);
     const itemCount = items.length;
@@ -984,7 +1040,7 @@ function pickConstellationForItems(items, opts = {}) {
     // roomier alternative actually exists.
     if (chosenPool.length > 1 && itemCount >= 7) {
         const roomy = chosenPool.filter((name) => {
-            const stars = (CONSTELLATION_DATA[name].stars || []).slice(0, itemCount);
+            const stars = CONSTELLATION_DATA[name].stars || [];
             const xs = stars.map((s) => s.x);
             const ys = stars.map((s) => s.y);
             const w = Math.max(...xs) - Math.min(...xs) || 1;
@@ -1029,11 +1085,20 @@ function pickConstellationForItems(items, opts = {}) {
 
     // Always render the constellation's full real star pattern - the same
     // name always looks like the same shape, whether it's carrying 7 nav
-    // links or 9 projects. Items sit on the first stars; any real stars
-    // left over still render as small unlabeled points so the outline
-    // stays complete instead of getting cut short.
+    // links or 9 projects. Stars left over still render as small unlabelled
+    // points so the outline stays complete instead of getting cut short.
+    //
+    // Which stars carry the items is chosen for spread rather than array
+    // order: the star list often runs along one limb of the figure, and
+    // labelling a tight run of neighbours leaves the captions fighting for the
+    // same patch of sky. This changes nothing about the shape itself - every
+    // star and every line still renders exactly where the chart puts it.
+    const carriers = pickSpreadIndices(baseStars, itemsForThisConstellation.length);
+    const itemForStar = new Map();
+    carriers.forEach((starIndex, n) => itemForStar.set(starIndex, itemsForThisConstellation[n]));
+
     const stars = baseStars.map((template, index) => {
-        const item = itemsForThisConstellation[index];
+        const item = itemForStar.get(index);
         if (item) {
             return {
                 ...item,
@@ -1085,6 +1150,66 @@ function describeConstellation(constellation) {
         : constellation.name;
 }
 
+/* Sizes the constellation wants to end up at ON SCREEN, in CSS pixels.
+   The SVG is scaled to fit its container, so these get converted into viewBox
+   units at render time (see `metricsFor`). Keeping them in screen pixels is
+   what makes a star the same size on the home page and the projects page,
+   whatever height each container happens to be. */
+const STAR_RADIUS_PX = 9;      // the visible star
+const STAR_HIT_RADIUS_PX = 22; // the (invisible) pointer target
+const DECOR_RADIUS_PX = 4;     // stars that only complete the outline
+const LABEL_SIZE_PX = 15;
+const LABEL_GAP_ABOVE_PX = 24;
+const LABEL_GAP_BELOW_PX = 30;
+const LABEL_GAP_SIDE_PX = 16;   // clearance when a caption sits beside a star
+const STAR_HALO_PX = 6;         // the glow around a star, which text must clear
+
+/* Half the average glyph advance, in em. Measured against rendered IBM Plex
+   Sans rather than guessed: at 0.29 the estimate came out ~13% narrow, and
+   captions got placed into gaps they did not actually fit. */
+const GLYPH_HALF_EM = 0.33;
+const EDGE_PADDING_PX = 10;    // breathing room at the canvas edge
+
+/**
+ * Work out the viewBox to draw into, and every metric in viewBox units, from
+ * the size the SVG actually occupies on screen.
+ *
+ * The viewBox is given the container's own aspect ratio so the shape fills the
+ * space instead of being letterboxed inside a fixed 800x600 box - which is what
+ * used to leave the constellation tiny in the middle of a wide container.
+ */
+function metricsFor(svg) {
+    const box = svg.getBoundingClientRect();
+    const boxW = box.width || 800;
+    const boxH = box.height || 600;
+
+    const vbHeight = 600;
+    // viewBox units per screen pixel
+    const unit = vbHeight / boxH;
+    // The viewBox must keep the container's exact aspect ratio, otherwise
+    // preserveAspectRatio letterboxes the drawing and every metric below comes
+    // out at the wrong scale. No clamping here for that reason - a very wide or
+    // very tall box just gets a very wide or very tall viewBox.
+    const vbWidth = Math.round(vbHeight * (boxW / boxH));
+
+    const labelSize = LABEL_SIZE_PX * unit;
+
+    return {
+        vbWidth,
+        vbHeight,
+        starRadius: STAR_RADIUS_PX * unit,
+        hitRadius: STAR_HIT_RADIUS_PX * unit,
+        decorRadius: DECOR_RADIUS_PX * unit,
+        labelSize,
+        labelCharHalf: labelSize * GLYPH_HALF_EM,
+        labelGapAbove: LABEL_GAP_ABOVE_PX * unit,
+        labelGapBelow: LABEL_GAP_BELOW_PX * unit,
+        labelGapSide: LABEL_GAP_SIDE_PX * unit,
+        starHalo: STAR_HALO_PX * unit,
+        edgePadding: EDGE_PADDING_PX * unit
+    };
+}
+
 /**
  * Shorten a star's on-screen caption at a word boundary where possible, so
  * long project names ("Good Times Music Blog") don't run into neighboring
@@ -1096,6 +1221,222 @@ function truncateLabel(text, maxChars = 18) {
     const lastSpace = cut.lastIndexOf(' ');
     const trimmed = lastSpace > maxChars * 0.5 ? cut.slice(0, lastSpace) : cut;
     return `${trimmed.trimEnd()}…`;
+}
+
+/* Caption positions tried around a star, as unit directions. Below and above
+   come first (they read best), then the sides, then the diagonals. */
+const LABEL_SIDES = [
+    { dx: 0, dy: 1, anchor: 'middle' },
+    { dx: 0, dy: -1, anchor: 'middle' },
+    { dx: 1, dy: 0, anchor: 'start' },
+    { dx: -1, dy: 0, anchor: 'end' },
+    { dx: 1, dy: 1, anchor: 'start' },
+    { dx: -1, dy: 1, anchor: 'end' },
+    { dx: 1, dy: -1, anchor: 'start' },
+    { dx: -1, dy: -1, anchor: 'end' },
+    { dx: 0.55, dy: 1, anchor: 'start' },
+    { dx: -0.55, dy: 1, anchor: 'end' },
+    { dx: 0.55, dy: -1, anchor: 'start' },
+    { dx: -0.55, dy: -1, anchor: 'end' }
+];
+
+/* Distances at which a caption is tried, as multiples of the base gap. */
+const LABEL_RINGS = [1, 1.5, 2.1];
+
+/* What each kind of collision costs a candidate position. Anything at or above
+   COST_CONFLICT means the caption could not be placed acceptably. */
+const COST_OFF_CANVAS = 1000;
+const COST_OVER_LABEL = 150;
+const COST_OVER_STAR = 150;
+const COST_OVER_DIM_STAR = 12;
+const COST_CONFLICT = 100;
+
+function boxesOverlap(a, b, pad) {
+    return !(a.right + pad < b.left || b.right + pad < a.left ||
+             a.bottom + pad < b.top || b.bottom + pad < a.top);
+}
+
+/**
+ * Choose where each caption sits, given stars whose positions are fixed.
+ *
+ * The stars ARE the real constellation and must not move, so the captions do
+ * all the accommodating: each tries a ring of candidate positions around its
+ * star and takes the first that collides with nothing. Candidates are ordered
+ * by how empty that side of the star is, so captions radiate away from a
+ * cluster rather than piling into it.
+ *
+ * @returns {{placements: Array, conflicts: number}} placements are indexed to
+ *   match `stars` (null where a star carries no caption); `conflicts` counts
+ *   the captions that could not be placed cleanly.
+ */
+function placeLabels(m, stars, svgWidth, svgHeight, labelChars) {
+    const placements = new Array(stars.length).fill(null);
+    const placed = [];
+    let conflicts = 0;
+    const pad = m.labelSize * 0.18;
+    const edge = m.labelSize * 0.4;
+
+    // Star discs are obstacles too, and so is the glow around them - text that
+    // lands inside a star's halo reads as sitting on the star even when the
+    // geometry says it clears. Every star counts here, including the caption's
+    // own: a label should sit beside its star, not on it.
+    const starBoxes = stars.map((star) => {
+        const dim = star.decorative || !star.label;
+        const r = (dim ? m.decorRadius : m.starRadius) + (dim ? 0 : m.starHalo) + pad;
+        return {
+            left: star.tx - r, right: star.tx + r, top: star.ty - r, bottom: star.ty + r,
+            // Text across a bright, glowing star is the worst thing that can
+            // happen to a caption. Text clipping a small dim point is barely
+            // noticeable - real star charts do it constantly - so it costs
+            // little and never forces a caption somewhere worse.
+            cost: dim ? COST_OVER_DIM_STAR : COST_OVER_STAR
+        };
+    });
+
+    // Longest captions first: they are the hardest to place, and placing them
+    // while there is still room gives a better result overall.
+    const order = stars
+        .map((star, index) => index)
+        .filter((index) => stars[index].label && !stars[index].decorative)
+        .sort((a, b) => stars[b].label.length - stars[a].label.length);
+
+    order.forEach((index) => {
+        const star = stars[index];
+        const text = truncateLabel(star.label, labelChars);
+        const halfW = text.length * m.labelCharHalf;
+        const height = m.labelSize * 1.15;
+
+        // Which way is emptiest? Sum the inverse-square pull of nearby stars
+        // and head the opposite way.
+        let crowdX = 0;
+        let crowdY = 0;
+        stars.forEach((other, j) => {
+            if (j === index) return;
+            const dx = other.tx - star.tx;
+            const dy = other.ty - star.ty;
+            const d = Math.hypot(dx, dy);
+            if (d < 1 || d > m.labelSize * 9) return;
+            crowdX += dx / (d * d);
+            crowdY += dy / (d * d);
+        });
+        const crowd = Math.hypot(crowdX, crowdY) || 1;
+        const awayX = -crowdX / crowd;
+        const awayY = -crowdY / crowd;
+
+        const candidates = LABEL_SIDES.map((side, rank) => {
+            const len = Math.hypot(side.dx, side.dy) || 1;
+            const align = (side.dx / len) * awayX + (side.dy / len) * awayY;
+            // Alignment with the empty direction decides, with a small bias
+            // towards the earlier (better-reading) sides to break ties.
+            return { side, score: align - rank * 0.02 };
+        }).sort((a, b) => b.score - a.score);
+
+        let best = null;
+        let bestPenalty = Infinity;
+
+        // Each side is tried at increasing distances. A caption pushed a little
+        // further out still clearly belongs to its star, and the extra rings are
+        // what let a crowded figure (nine projects on one shape) resolve at all
+        // instead of settling for a caption printed over a star.
+        for (let r = 0; r < LABEL_RINGS.length && bestPenalty > 0; r++) {
+            const ring = LABEL_RINGS[r];
+
+            for (let c = 0; c < candidates.length; c++) {
+                const side = candidates[c].side;
+                const gapX = (m.starRadius + m.starHalo + m.labelGapSide) * ring;
+                const gapY = (side.dy > 0 ? m.labelGapBelow : m.labelGapAbove) * ring;
+
+                const x = star.tx + side.dx * gapX;
+                const y = star.ty + (side.dy === 0 ? m.labelSize * 0.34 : side.dy * gapY);
+
+                const left = side.anchor === 'middle' ? x - halfW
+                    : side.anchor === 'start' ? x : x - halfW * 2;
+                const top = y - m.labelSize * 0.8;
+                const box = { left, right: left + halfW * 2, top, bottom: top + height };
+
+                let penalty = 0;
+                // Off-canvas is disqualifying: a clipped caption is unreadable.
+                if (box.left < edge || box.right > svgWidth - edge ||
+                    box.top < edge || box.bottom > svgHeight - edge) {
+                    penalty += COST_OFF_CANVAS;
+                }
+                // Text over another caption and text over a star are equally
+                // unreadable, so they cost the same.
+                placed.forEach((other) => { if (boxesOverlap(box, other, pad)) penalty += COST_OVER_LABEL; });
+                starBoxes.forEach((sb) => { if (boxesOverlap(box, sb, 0)) penalty += sb.cost; });
+
+                // Nudge towards the nearer rings when nothing is clean.
+                const adjusted = penalty === 0 ? 0 : penalty + r * 4;
+
+                if (adjusted < bestPenalty) {
+                    bestPenalty = adjusted;
+                    best = { box: box, x: x, y: y, anchor: side.anchor };
+                }
+                if (penalty === 0) break;
+            }
+        }
+
+        // Last resort: nothing was clean, so at least keep it on the canvas.
+        if (bestPenalty >= COST_OFF_CANVAS) {
+            const shiftX = Math.min(0, svgWidth - edge - best.box.right) +
+                           Math.max(0, edge - best.box.left);
+            const shiftY = Math.min(0, svgHeight - edge - best.box.bottom) +
+                           Math.max(0, edge - best.box.top);
+            best.x += shiftX;
+            best.y += shiftY;
+            best.box = {
+                left: best.box.left + shiftX,
+                right: best.box.right + shiftX,
+                top: best.box.top + shiftY,
+                bottom: best.box.bottom + shiftY
+            };
+        }
+
+        // Clipping a small dim point is acceptable (star charts do it all the
+        // time); running into a caption or a bright star is not.
+        if (bestPenalty >= COST_CONFLICT) conflicts++;
+
+        placed.push(best.box);
+        placements[index] = { x: best.x, y: best.y, anchor: best.anchor, text: text };
+    });
+
+    return { placements: placements, conflicts: conflicts };
+}
+
+/**
+ * Lay the captions out, shrinking them until they actually fit.
+ *
+ * Placement alone cannot always win: some real constellations pack their stars
+ * tightly, and nine long project names will not sit cleanly on one of those at
+ * full size however they are arranged. So this asks for a layout, and if any
+ * caption had to settle for a bad spot it shortens the text, then reduces the
+ * type, and asks again. It stops at the first clean result - which for most
+ * figures is the very first attempt, at full size.
+ */
+function layoutLabels(stars, m, svgWidth, svgHeight) {
+    let chars = 18;
+    let size = m.labelSize;
+    let best = null;
+
+    for (let pass = 0; pass < 7; pass++) {
+        const trial = placeLabels(
+            Object.assign({}, m, { labelSize: size, labelCharHalf: size * GLYPH_HALF_EM }),
+            stars, svgWidth, svgHeight, chars
+        );
+
+        if (!best || trial.conflicts < best.conflicts) {
+            best = { placements: trial.placements, conflicts: trial.conflicts, size: size };
+        }
+        if (trial.conflicts === 0) break;
+
+        // Shorten before shrinking: a slightly abbreviated name at a readable
+        // size beats the full name at a size nobody can read.
+        if (chars > 10) chars -= 3;
+        else if (size > m.labelSize * 0.72) size *= 0.9;
+        else break;
+    }
+
+    return best;
 }
 
 /**
@@ -1112,53 +1453,17 @@ function renderConstellation(constellation, svg, options = {}) {
     // Clear existing content
     svg.innerHTML = '';
 
-    // Base SVG size
-    const svgWidth = 800;
-    const svgHeight = 600;
+    // Remember what was drawn so a resize can re-render the same constellation
+    // at the new size rather than picking a different one.
+    svg.__constellation = { constellation, options };
+
+    const m = metricsFor(svg);
+    const svgWidth = m.vbWidth;
+    const svgHeight = m.vbHeight;
     svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
 
     if (!constellation.stars || constellation.stars.length === 0) {
         return;
-    }
-
-    // Helper to enforce that each star has between 1 and maxDegree connections
-    function enforceDegreeBounds(connections, nodeCount, maxDegree = 2) {
-        const conns = connections ? [...connections] : [];
-        const degree = new Array(nodeCount).fill(0);
-
-        conns.forEach(([a, b]) => {
-            if (a >= 0 && a < nodeCount) degree[a]++;
-            if (b >= 0 && b < nodeCount) degree[b]++;
-        });
-
-        // Ensure every node has at least one connection
-        for (let i = 0; i < nodeCount; i++) {
-            if (degree[i] === 0 && nodeCount > 1) {
-                const j = (i + 1) % nodeCount;
-                conns.push([i, j]);
-                degree[i]++;
-                degree[j]++;
-            }
-        }
-
-        // Gently prune connections so no node exceeds maxDegree,
-        // without ever dropping any node below degree 1.
-        let changed = true;
-        while (changed) {
-            changed = false;
-            for (let idx = 0; idx < conns.length; idx++) {
-                const [a, b] = conns[idx];
-                if ((degree[a] > maxDegree || degree[b] > maxDegree) && degree[a] > 1 && degree[b] > 1) {
-                    conns.splice(idx, 1);
-                    degree[a]--;
-                    degree[b]--;
-                    changed = true;
-                    break;
-                }
-            }
-        }
-
-        return conns;
     }
 
     // Compute bounding box of the raw star coordinates
@@ -1184,11 +1489,11 @@ function renderConstellation(constellation, svg, options = {}) {
         (max, star) => Math.max(max, truncateLabel(star.label || '').length),
         0
     );
-    const labelHalfWidth = (longestLabel * 5.2) + 16; // ~half a caption's width, in SVG units
+    const labelHalfWidth = (longestLabel * m.labelCharHalf) + m.edgePadding; // ~half a caption
 
     // Scale up and center the constellation within the SVG, with a margin
     // wide enough that even an edge star's caption stays on-canvas.
-    const margin = Math.max(48, labelHalfWidth);
+    const margin = Math.max(m.hitRadius * 1.6, labelHalfWidth);
     const scale = Math.min(
         (svgWidth - 2 * margin) / rawWidth,
         (svgHeight - 2 * margin) / rawHeight
@@ -1204,70 +1509,26 @@ function renderConstellation(constellation, svg, options = {}) {
         ty: star.y * scale + offsetY
     }));
 
-    // Gently spread out stars so they don't overlap. Each star only needs
-    // as much personal space as its OWN caption requires - a plain
-    // (unlabeled) decorative star needs just enough to clear its circle,
-    // while a labeled star needs room for its text. Using a per-star half
-    // -space (rather than one flat distance for every pair) means a
-    // tightly-clustered real cluster of decorative stars stays tight and
-    // recognizable instead of being blown apart to match the widest
-    // caption in the whole shape.
-    const CIRCLE_HALF_SPACE = 32;
-    const starHalfSpace = transformedStars.map((star) => {
-        if (!star.label) return CIRCLE_HALF_SPACE;
-        return Math.max(CIRCLE_HALF_SPACE, truncateLabel(star.label).length * 5.2 + 16);
-    });
-    const iterations = 60;
-
-    for (let iter = 0; iter < iterations; iter++) {
-        let movedAny = false;
-        for (let i = 0; i < transformedStars.length; i++) {
-            for (let j = i + 1; j < transformedStars.length; j++) {
-                const a = transformedStars[i];
-                const b = transformedStars[j];
-                const pairMinDist = starHalfSpace[i] + starHalfSpace[j];
-
-                let dx = b.tx - a.tx;
-                let dy = b.ty - a.ty;
-                let dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
-
-                if (dist < pairMinDist) {
-                    const overlap = (pairMinDist - dist) / 2;
-                    dx /= dist;
-                    dy /= dist;
-
-                    a.tx -= dx * overlap;
-                    a.ty -= dy * overlap;
-                    b.tx += dx * overlap;
-                    b.ty += dy * overlap;
-
-                    // Keep stars within the original margin
-                    a.tx = Math.max(margin, Math.min(svgWidth - margin, a.tx));
-                    a.ty = Math.max(margin, Math.min(svgHeight - margin, a.ty));
-                    b.tx = Math.max(margin, Math.min(svgWidth - margin, b.tx));
-                    b.ty = Math.max(margin, Math.min(svgHeight - margin, b.ty));
-
-                    movedAny = true;
-                }
-            }
-        }
-        if (!movedAny) break;
-    }
-
-    // Ensure every star participates in at least one connection,
-    // and no star has more than two connections.
-    const ensuredConnections = enforceDegreeBounds(
-        constellation.connections || [],
-        transformedStars.length,
-        2
-    );
+    // NOTHING moves the stars from here on. The transform above is a single
+    // uniform scale plus a translation, so what renders is the real
+    // constellation's true geometry - every angle and every relative distance
+    // preserved. Captions are fitted around the stars (see placeLabels), never
+    // the other way round.
 
     // Create a group for lines
     const linesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     linesGroup.setAttribute('class', 'constellation-lines');
 
     // Draw connections (lines between stars)
-    ensuredConnections.forEach((connection, idx) => {
+    // Every line the star chart draws, exactly as the chart draws it. (This
+    // used to be filtered so no star had more than two lines, which quietly
+    // deleted the hub stars that give shapes like Orion and Cygnus their
+    // recognisable form.)
+    const connections = (constellation.connections || []).filter(
+        ([a, b]) => transformedStars[a] && transformedStars[b]
+    );
+
+    connections.forEach((connection, idx) => {
         const [starIndex1, starIndex2] = connection;
         const star1 = transformedStars[starIndex1];
         const star2 = transformedStars[starIndex2];
@@ -1288,26 +1549,14 @@ function renderConstellation(constellation, svg, options = {}) {
     const starsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     starsGroup.setAttribute('class', 'stars-group');
 
-    // Decide which side (above/below) each label sits on based on its
-    // closest neighboring star, rather than array order - two stars that
-    // happen to land near each other (regardless of index parity) end up
-    // on opposite sides instead of both defaulting to the same one.
-    const labelBelowFlags = transformedStars.map((star, i) => {
-        let nearest = null;
-        let nearestDist = Infinity;
-        transformedStars.forEach((other, j) => {
-            if (i === j) return;
-            const d = Math.hypot(other.tx - star.tx, other.ty - star.ty);
-            if (d < nearestDist) {
-                nearestDist = d;
-                nearest = other;
-            }
-        });
-        if (!nearest) return i % 2 === 1;
-        // Put the label on the side away from the closest neighbor.
-        if (Math.abs(nearest.ty - star.ty) < 8) return i % 2 === 1; // roughly level - fall back to alternating
-        return nearest.ty < star.ty;
-    });
+    // Fit the captions around the fixed stars. Because the stars can no longer
+    // be nudged apart, this is where crowding gets resolved: each caption tries
+    // a ring of positions around its star and takes the first that clears the
+    // other captions, the other stars, and the canvas edge - preferring
+    // whichever side of the star is emptiest.
+    const layout = layoutLabels(transformedStars, m, svgWidth, svgHeight);
+    const placements = layout.placements;
+    m.labelSize = layout.size;
 
     // Draw stars
     transformedStars.forEach((star, index) => {
@@ -1318,20 +1567,35 @@ function renderConstellation(constellation, svg, options = {}) {
         starGroup.setAttribute('class', isDecorative ? 'star-group star-group-decorative' : 'star-group');
         starGroup.style.cursor = !isDecorative && (onStarClick || star.link) ? 'pointer' : 'default';
 
-        // Create the star circle - decorative (unused, real) stars render
-        // small and dim, just enough to complete the true outline, without
-        // competing for attention with the actual clickable stars.
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', star.tx);
-        circle.setAttribute('cy', star.ty);
-        circle.setAttribute('r', isDecorative ? '7' : '24');
-        circle.setAttribute(
+        // Two circles per interactive star: an invisible one carrying the
+        // pointer target (kept generous, so it stays easy to hit on touch),
+        // and a smaller visible one that actually looks like a star rather
+        // than a flat disc. Decorative stars need only the visible circle -
+        // they are small, dim, and complete the true outline without
+        // competing for attention with the clickable stars.
+        const core = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        core.setAttribute('cx', star.tx);
+        core.setAttribute('cy', star.ty);
+        core.setAttribute('r', isDecorative ? m.decorRadius : m.starRadius);
+        core.setAttribute(
             'class',
             isDecorative ? 'constellation-star constellation-star-decorative' : 'constellation-star'
         );
-        circle.setAttribute('data-index', index);
-        if (star.link) circle.setAttribute('data-link', star.link);
-        circle.style.animationDelay = `${index * 0.15}s`;
+        core.setAttribute('data-index', index);
+        core.style.animationDelay = `${index * 0.15}s`;
+
+        const circle = isDecorative
+            ? core
+            : document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
+        if (!isDecorative) {
+            circle.setAttribute('cx', star.tx);
+            circle.setAttribute('cy', star.ty);
+            circle.setAttribute('r', m.hitRadius);
+            circle.setAttribute('class', 'constellation-hit');
+            circle.setAttribute('data-index', index);
+            if (star.link) circle.setAttribute('data-link', star.link);
+        }
 
         // Native tooltip: the item label when there is one, otherwise the
         // real star's own name (a little "hidden detail" on hover).
@@ -1373,20 +1637,28 @@ function renderConstellation(constellation, svg, options = {}) {
             });
         }
 
-        starGroup.appendChild(circle);
+        // The visible star sits under the hit target.
+        starGroup.appendChild(core);
+        if (circle !== core) starGroup.appendChild(circle);
 
         if (!isDecorative) {
             // Create label text. Placed above or below depending on where
             // this star's closest neighbor is, so nearby stars' captions
             // land on opposite sides instead of colliding.
             const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            const labelBelow = labelBelowFlags[index];
-            label.setAttribute('x', star.tx);
-            label.setAttribute('y', labelBelow ? star.ty + 46 : star.ty - 40);
+            const place = placements[index];
+            label.setAttribute('x', place.x);
+            label.setAttribute('y', place.y);
+            // Inline styles, not presentation attributes: a stylesheet rule
+            // would win over an attribute and undo the placement.
+            label.style.textAnchor = place.anchor;
+            // Inline style, not a presentation attribute: the inherited body
+            // font-size would otherwise win and shrink every caption.
+            label.style.fontSize = m.labelSize + 'px';
+            label.setAttribute('text-anchor', place.anchor);
             label.setAttribute('class', 'constellation-label');
-            label.classList.toggle('label-below', labelBelow);
             label.setAttribute('data-index', index);
-            label.textContent = truncateLabel(star.label);
+            label.textContent = place.text;
 
             starGroup.appendChild(label);
         }
@@ -1397,3 +1669,69 @@ function renderConstellation(constellation, svg, options = {}) {
     svg.appendChild(starsGroup);
 
 }
+
+/* Keep the drawing in step with the box it lives in.
+
+   The SVG's height comes from CSS (flex space on the home page, an explicit
+   height on the projects page), so it changes when the window resizes, when
+   the web font finishes loading and reflows the hero, or when a view toggles.
+   Re-render on any of those so stars and captions keep their intended
+   on-screen size. The constellation itself is never re-picked, so the sky does
+   not change under the reader mid-session. */
+(function watchConstellationSize() {
+    if (typeof window === 'undefined') return;
+
+    const SELECTOR = '#constellationCanvas, #projectsConstellation';
+    const lastSize = new WeakMap();
+
+    function redraw(svg) {
+        const state = svg.__constellation;
+        if (!state) return;
+
+        const { width, height } = svg.getBoundingClientRect();
+        if (height < 1 || width < 1) return;
+
+        // Re-rendering does not change the element's own box, so this cannot
+        // loop; the threshold just avoids churn on sub-pixel reflows.
+        const previous = lastSize.get(svg);
+        if (previous && Math.abs(previous.width - width) < 2 && Math.abs(previous.height - height) < 2) {
+            return;
+        }
+        lastSize.set(svg, { width, height });
+
+        renderConstellation(state.constellation, svg, state.options);
+    }
+
+    function redrawAll() {
+        document.querySelectorAll(SELECTOR).forEach(redraw);
+    }
+
+    // Window resize is the guaranteed signal and covers the common case.
+    let timer = 0;
+    window.addEventListener('resize', () => {
+        clearTimeout(timer);
+        timer = setTimeout(redrawAll, 180);
+    });
+
+    // A ResizeObserver catches the rest - a container reflowing without the
+    // window changing, which is what happens when the view toggles or a late
+    // stylesheet lands. Additive, not a replacement: `lastSize` means whichever
+    // fires first does the work and the other is a no-op.
+    if (typeof ResizeObserver === 'function') {
+        const observer = new ResizeObserver((entries) => {
+            entries.forEach((entry) => redraw(entry.target));
+        });
+        const observeAll = () => document.querySelectorAll(SELECTOR).forEach((svg) => observer.observe(svg));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', observeAll);
+        } else {
+            observeAll();
+        }
+    }
+
+    // The web font lands after first paint and reflows the hero, which changes
+    // how much room is left for the constellation.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(redrawAll).catch(() => {});
+    }
+}());

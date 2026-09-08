@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const href = blackHole.getAttribute('href');
             if (!href) return;
 
+            // Anyone who has asked for reduced motion just gets the link.
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
             e.preventDefault();
 
             // Trigger CSS animations

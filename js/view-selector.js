@@ -1,5 +1,5 @@
 // View Selector System
-// Handles switching between constellation view and simplified view
+// Handles switching between constellation view and simplified view.
 
 const VIEW_STORAGE_KEY = 'portfolioViewMode';
 const VIEW_MODES = {
@@ -7,12 +7,35 @@ const VIEW_MODES = {
     SIMPLIFIED: 'simplified'
 };
 
+// Inline SVG symbols rather than emoji: they inherit the current text colour,
+// scale cleanly, and look the same on every platform.
+const VIEW_ICONS = {
+    [VIEW_MODES.CONSTELLATION]: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M4.5 15.5 10 7.5l4.5 5.5L20 5" opacity="0.55"/>
+            <circle cx="4.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="10" cy="7.5" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="14.5" cy="13" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="20" cy="5" r="1.2" fill="currentColor" stroke="none"/>
+            <circle cx="7" cy="20" r="0.9" fill="currentColor" stroke="none" opacity="0.6"/>
+            <circle cx="18" cy="18.5" r="1.1" fill="currentColor" stroke="none" opacity="0.6"/>
+        </svg>`,
+    [VIEW_MODES.SIMPLIFIED]: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <rect x="3.5" y="4" width="17" height="6.5" rx="1.8"/>
+            <rect x="3.5" y="13.5" width="17" height="6.5" rx="1.8"/>
+            <path d="M6.5 7.25h6M6.5 16.75h6" opacity="0.55"/>
+        </svg>`
+};
+
 /**
  * Initialize the view selector system
  */
 function initViewSelector() {
     const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
-    
+
     // Check if user has a saved preference
     if (!savedView) {
         showViewSelectorModal();
@@ -25,44 +48,45 @@ function initViewSelector() {
  * Show the view selection modal
  */
 function showViewSelectorModal() {
-    // Create modal HTML
     const modal = document.createElement('div');
     modal.id = 'viewSelectorModal';
     modal.className = 'view-selector-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'viewSelectorTitle');
     modal.innerHTML = `
         <div class="view-selector-content">
-            <h1>Welcome!</h1>
-            <p>Choose your preferred way to explore my portfolio</p>
-            
+            <h1 id="viewSelectorTitle">Welcome</h1>
+            <p>Choose how you would like to explore the portfolio. You can switch at any time.</p>
+
             <div class="view-options">
-                <label class="view-option" id="constellationOption">
+                <label class="view-option selected" id="constellationOption">
                     <input type="radio" name="viewMode" value="${VIEW_MODES.CONSTELLATION}" checked>
-                    <span class="view-option-icon">✨</span>
-                    <div class="view-option-title">Original View</div>
-                    <div class="view-option-desc">Constellation-based navigation with an interactive cosmic experience</div>
+                    <span class="view-option-icon">${VIEW_ICONS[VIEW_MODES.CONSTELLATION]}</span>
+                    <span class="view-option-title">Constellation</span>
+                    <span class="view-option-desc">Navigate by the stars of a real night-sky constellation.</span>
                 </label>
-                
+
                 <label class="view-option" id="simplifiedOption">
                     <input type="radio" name="viewMode" value="${VIEW_MODES.SIMPLIFIED}">
-                    <span class="view-option-icon">📱</span>
-                    <div class="view-option-title">Simplified View</div>
-                    <div class="view-option-desc">Card-based layout, recommended for mobile and smaller screens</div>
+                    <span class="view-option-icon">${VIEW_ICONS[VIEW_MODES.SIMPLIFIED]}</span>
+                    <span class="view-option-title">Simplified</span>
+                    <span class="view-option-desc">A plain card layout, best on phones and small screens.</span>
                 </label>
             </div>
-            
+
             <div class="view-selector-buttons">
-                <button id="continueBtn">Continue</button>
+                <button id="continueBtn" type="button">Continue</button>
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
     document.body.classList.add('modal-open');
-    
-    // Setup event listeners
-    const options = document.querySelectorAll('.view-option');
-    const continueBtn = document.getElementById('continueBtn');
-    
+
+    const options = modal.querySelectorAll('.view-option');
+    const continueBtn = modal.querySelector('#continueBtn');
+
     options.forEach(option => {
         option.addEventListener('click', () => {
             options.forEach(o => o.classList.remove('selected'));
@@ -70,20 +94,28 @@ function showViewSelectorModal() {
             option.querySelector('input').checked = true;
         });
     });
-    
-    continueBtn.addEventListener('click', () => {
-        const selectedMode = document.querySelector('input[name="viewMode"]:checked').value;
+
+    function commit() {
+        const selectedMode = modal.querySelector('input[name="viewMode"]:checked').value;
         localStorage.setItem(VIEW_STORAGE_KEY, selectedMode);
-        
-        // Close modal with animation
+
         modal.classList.add('hidden');
         document.body.classList.remove('modal-open');
-        
+        document.removeEventListener('keydown', onKeydown);
+
         setTimeout(() => {
             modal.remove();
             applyViewMode(selectedMode);
         }, 300);
-    });
+    }
+
+    function onKeydown(e) {
+        if (e.key === 'Enter' || e.key === 'Escape') commit();
+    }
+
+    continueBtn.addEventListener('click', commit);
+    document.addEventListener('keydown', onKeydown);
+    continueBtn.focus();
 }
 
 /**
@@ -95,7 +127,7 @@ function applyViewMode(viewMode) {
     } else {
         loadConstellationView();
     }
-    
+
     // Add the toggle button after applying view mode
     addViewToggleButton();
 }
@@ -105,14 +137,14 @@ function applyViewMode(viewMode) {
  */
 function loadConstellationView() {
     const currentPage = getCurrentPage();
-    
+
     if (currentPage === 'home') {
         // Show constellation container
         const constellationContainer = document.querySelector('.constellation-container');
         if (constellationContainer) {
             constellationContainer.style.display = 'flex';
         }
-        
+
         const simplifiedContainer = document.getElementById('simplifiedHomeContainer');
         if (simplifiedContainer) {
             simplifiedContainer.style.display = 'none';
@@ -141,14 +173,14 @@ function loadConstellationView() {
  */
 function loadSimplifiedView() {
     const currentPage = getCurrentPage();
-    
+
     if (currentPage === 'home') {
         // Hide constellation container completely
         const constellationContainer = document.querySelector('.constellation-container');
         if (constellationContainer) {
             constellationContainer.style.display = 'none';
         }
-        
+
         const simplifiedContainer = document.getElementById('simplifiedHomeContainer');
         if (simplifiedContainer) {
             simplifiedContainer.style.display = 'block';
@@ -189,12 +221,12 @@ function setProjectsSubtitle(viewMode) {
  */
 function getCurrentPage() {
     const pathname = window.location.pathname.toLowerCase();
-    if (pathname.includes('index') || pathname.endsWith('/')) {
-        return 'home';
-    } else if (pathname.includes('projects')) {
+    if (pathname.includes('projects')) {
         return 'projects';
     } else if (pathname.includes('about')) {
         return 'about';
+    } else if (pathname.includes('index') || pathname.endsWith('/')) {
+        return 'home';
     }
     return 'unknown';
 }
@@ -207,7 +239,7 @@ function getCurrentViewMode() {
 }
 
 /**
- * Toggle view mode (useful for a toggle button if needed later)
+ * Toggle view mode
  */
 function toggleViewMode() {
     const current = getCurrentViewMode();
@@ -217,22 +249,28 @@ function toggleViewMode() {
 }
 
 /**
- * Add a view mode toggle button to the page
+ * Add a view mode toggle button to the page. The icon shows the view you
+ * would switch *to*, not the one you are in.
  */
 function addViewToggleButton() {
-    // Check if button already exists
     if (document.getElementById('viewToggleBtn')) {
         return;
     }
 
-    const currentMode = getCurrentViewMode();
+    const target = getCurrentViewMode() === VIEW_MODES.CONSTELLATION
+        ? VIEW_MODES.SIMPLIFIED
+        : VIEW_MODES.CONSTELLATION;
+    const targetName = target === VIEW_MODES.SIMPLIFIED ? 'simplified' : 'constellation';
+
     const toggleBtn = document.createElement('button');
     toggleBtn.id = 'viewToggleBtn';
     toggleBtn.className = 'view-toggle-btn';
-    toggleBtn.title = `Switch to ${currentMode === VIEW_MODES.CONSTELLATION ? 'Simplified' : 'Constellation'} View`;
-    toggleBtn.innerHTML = currentMode === VIEW_MODES.CONSTELLATION ? '📱' : '✨';
+    toggleBtn.type = 'button';
+    toggleBtn.title = `Switch to ${targetName} view`;
+    toggleBtn.setAttribute('aria-label', `Switch to ${targetName} view`);
+    toggleBtn.innerHTML = VIEW_ICONS[target];
     toggleBtn.addEventListener('click', toggleViewMode);
-    
+
     document.body.appendChild(toggleBtn);
 }
 
