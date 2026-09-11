@@ -21,28 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Black hole "suck into home" transition
-    const blackHole = document.querySelector('.black-hole-home');
-    if (blackHole) {
-        blackHole.addEventListener('click', (e) => {
-            const href = blackHole.getAttribute('href');
-            if (!href) return;
-
-            // Anyone who has asked for reduced motion just gets the link.
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-            e.preventDefault();
-
-            // Trigger CSS animations
-            document.body.classList.add('page-sucked');
-
-            // After the animation completes, navigate to the target (home)
-            setTimeout(() => {
-                window.location.href = href;
-            }, 1150);
-        });
-    }
-
     // Add smooth scroll behavior for in-page anchors
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {

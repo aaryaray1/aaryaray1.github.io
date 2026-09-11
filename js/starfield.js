@@ -117,9 +117,15 @@
     const veil = document.createElement('div');
     veil.className = 'sky-veil';
 
+    // Never shown. The wash and the nebulosity are baked here so they can be
+    // laid down again without the stars, and without the random draws that
+    // built them coming out different the second time.
+    const backCanvas = document.createElement('canvas');
+
     const sctx = staticCanvas.getContext('2d');
     const lctx = liveCanvas.getContext('2d');
-    if (!sctx || !lctx) return;
+    const bctx = backCanvas.getContext('2d');
+    if (!sctx || !lctx || !bctx) return;
 
     host.appendChild(staticCanvas);
     host.appendChild(liveCanvas);
@@ -404,21 +410,44 @@
         }
     }
 
-    function paintStatic() {
-        sctx.setTransform(1, 0, 0, 1, 0, 0);
-        sctx.clearRect(0, 0, staticCanvas.width, staticCanvas.height);
-        sctx.scale(staticCanvas.width / width, staticCanvas.height / height);
+    function paintBackdrop() {
+        bctx.setTransform(1, 0, 0, 1, 0, 0);
+        bctx.clearRect(0, 0, backCanvas.width, backCanvas.height);
+        bctx.scale(backCanvas.width / width, backCanvas.height / height);
 
         // Base wash - not flat black, so the sky has some depth to it.
-        const base = sctx.createLinearGradient(0, 0, 0, height);
+        const base = bctx.createLinearGradient(0, 0, 0, height);
         base.addColorStop(0, '#07061a');
         base.addColorStop(0.55, '#050411');
         base.addColorStop(1, '#030209');
-        sctx.fillStyle = base;
-        sctx.fillRect(0, 0, width, height);
+        bctx.fillStyle = base;
+        bctx.fillRect(0, 0, width, height);
 
-        paintBlooms(sctx);
-        paintMilkyWay(sctx);
+        paintBlooms(bctx);
+        paintMilkyWay(bctx);
+    }
+
+    // Settles the edges and keeps the corners out of the way of the content.
+    function paintVignette(ctx) {
+        const vig = ctx.createRadialGradient(
+            width / 2, height / 2, Math.min(width, height) * 0.25,
+            width / 2, height / 2, Math.max(width, height) * 0.78
+        );
+        vig.addColorStop(0, 'rgba(3,2,9,0)');
+        vig.addColorStop(1, 'rgba(3,2,9,' + cfg.vignette + ')');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, width, height);
+    }
+
+    function paintStatic() {
+        sctx.setTransform(1, 0, 0, 1, 0, 0);
+        sctx.clearRect(0, 0, staticCanvas.width, staticCanvas.height);
+        sctx.drawImage(backCanvas, 0, 0, staticCanvas.width, staticCanvas.height);
+        sctx.scale(staticCanvas.width / width, staticCanvas.height / height);
+
+        // Once the hole has been clicked the stars belong to the live layer,
+        // and so does the vignette, which has to end up over them.
+        if (sink) return;
 
         // When nothing is going to brighten them - reduced motion, so no live
         // layer at all - the twinklers are laid down at full strength instead,
@@ -431,16 +460,7 @@
             paintStar(sctx, star, star.tw ? star.a * floor : star.a);
         }
 
-        // Vignette, to settle the edges and keep the corners out of the way of
-        // the content.
-        const vig = sctx.createRadialGradient(
-            width / 2, height / 2, Math.min(width, height) * 0.25,
-            width / 2, height / 2, Math.max(width, height) * 0.78
-        );
-        vig.addColorStop(0, 'rgba(3,2,9,0)');
-        vig.addColorStop(1, 'rgba(3,2,9,' + cfg.vignette + ')');
-        sctx.fillStyle = vig;
-        sctx.fillRect(0, 0, width, height);
+        paintVignette(sctx);
     }
 
     /* --- Meteors ------------------------------------------------------------ */
@@ -508,6 +528,114 @@
 
     /* --- Live layer --------------------------------------------------------- */
 
+    // js/blackhole.js calls collapseSky() when the hole is clicked: every star
+    // runs the same decaying spiral the page content is on, streaking as it goes.
+
+    const SINK_SWIRL = 2.2;
+
+    let sink = null;
+    let sinkAt = 0;
+    let sinkFor = 0;
+
+    function collapseSky(viewX, viewY, duration) {
+        const box = host.getBoundingClientRect();
+        sink = { x: viewX - box.left, y: viewY - box.top };
+
+        const reach = Math.max(
+            Math.hypot(sink.x, sink.y),
+            Math.hypot(width - sink.x, sink.y),
+            Math.hypot(sink.x, height - sink.y),
+            Math.hypot(width - sink.x, height - sink.y)
+        );
+
+        // Polar position held per star, so the frame loop does no square roots.
+        for (let i = 0; i < stars.length; i++) {
+            const star = stars[i];
+            const dx = star.x * width - sink.x;
+            const dy = star.y * height - sink.y;
+            const r = Math.hypot(dx, dy) || 0.0001;
+            star.fr = r;
+            star.fc = dx / r;
+            star.fs = dy / r;
+            // Its own appointment with the hole. Mostly luck, biased so the
+            // near sky goes first: the field is eaten grain by grain from the
+            // inside out, rather than sliding in as one sheet.
+            star.ft = rand(0.32, 0.94) + 0.3 * (r / reach);
+            // Inner sky sweeps round hardest, the way a disc winds up.
+            star.fw = SINK_SWIRL * (0.4 + 0.6 * (1 - r / reach));
+        }
+
+        // The stars come off the baked layer; the wash and the band stay put,
+        // so the colour behind them never changes.
+        paintStatic();
+
+        sinkFor = duration;
+        sinkAt = performance.now();
+        if (!rafId) {
+            lastFrame = sinkAt;
+            rafId = requestAnimationFrame(frame);
+        }
+    }
+
+    function paintInfall(now) {
+        const p = Math.min((now - sinkAt) / sinkFor, 1);
+
+        lctx.lineCap = 'round';
+
+        for (let i = 0; i < stars.length; i++) {
+            const star = stars[i];
+
+            // Each star runs its own clock, so at any instant the field holds
+            // every stage at once: some barely moving, some already gone.
+            const q = p / star.ft;
+            if (q >= 1) continue;
+
+            // Burns out as it crosses, rather than winking off at the centre.
+            const a = star.a * (q < 0.84 ? 1 : 1 - (q - 0.84) / 0.16);
+            if (a <= 0.012) continue;
+
+            const pull = Math.pow(q, 1.9);
+            // Where it was a moment ago; the gap widens as it accelerates.
+            const back = Math.max(pull - 0.01 - pull * 0.02, 0);
+
+            const aNow = star.fw * pull;
+            const aWas = star.fw * back;
+            const cNow = Math.cos(aNow);
+            const sNow = Math.sin(aNow);
+            const cWas = Math.cos(aWas);
+            const sWas = Math.sin(aWas);
+            const kNow = star.fr * (1 - pull);
+            const kWas = star.fr * (1 - back);
+
+            const x = sink.x + kNow * (star.fc * cNow - star.fs * sNow);
+            const y = sink.y + kNow * (star.fs * cNow + star.fc * sNow);
+            const px = sink.x + kWas * (star.fc * cWas - star.fs * sWas);
+            const py = sink.y + kWas * (star.fs * cWas + star.fc * sWas);
+
+            if (star.r > 1.35) {
+                const halo = star.r * 7 * (1 - pull * 0.6);
+                lctx.globalAlpha = a;
+                lctx.drawImage(glowSprite(star.c), x - halo, y - halo, halo * 2, halo * 2);
+                lctx.globalAlpha = 1;
+            }
+
+            lctx.strokeStyle = 'rgba(' + star.c + ',' + a + ')';
+            lctx.lineWidth = Math.max(star.r * 2 * (1 - 0.45 * pull), 0.5);
+            lctx.beginPath();
+            lctx.moveTo(px, py);
+            lctx.lineTo(x, y);
+            lctx.stroke();
+
+            // The brightest few keep their spikes until they are properly under
+            // way, so nothing pops at the moment the live layer takes over.
+            if (star.r > 2.45 && pull < 0.3) {
+                paintSpikes(lctx, x, y, star.r * 6.5, a * 0.3 * (1 - pull / 0.3), star.c);
+            }
+        }
+
+        paintVignette(lctx);
+    }
+
     let rafId = 0;
     let lastFrame = 0;
 
@@ -519,6 +647,11 @@
         lctx.setTransform(1, 0, 0, 1, 0, 0);
         lctx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
         lctx.scale(liveCanvas.width / width, liveCanvas.height / height);
+
+        if (sink) {
+            paintInfall(now);
+            return;
+        }
 
         const t = now / 1000;
         for (let i = 0; i < twinklers.length; i++) {
@@ -604,7 +737,7 @@
         width = host.clientWidth || window.innerWidth + 64;
         height = host.clientHeight || window.innerHeight + 64;
 
-        [staticCanvas, liveCanvas].forEach((canvas) => {
+        [staticCanvas, liveCanvas, backCanvas].forEach((canvas) => {
             canvas.width = Math.round(width * dpr);
             canvas.height = Math.round(height * dpr);
         });
@@ -613,6 +746,7 @@
     function build() {
         size();
         buildField();
+        paintBackdrop();
         paintStatic();
     }
 
@@ -638,6 +772,7 @@
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             size();
+            paintBackdrop();
             paintStatic();
         }, 150);
     });
@@ -662,4 +797,5 @@
     } else if (typeof motionQuery.addListener === 'function') {
         motionQuery.addListener(onMotionChange);
     }
+    window.collapseSky = collapseSky;
 }());
