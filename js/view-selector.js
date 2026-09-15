@@ -1,5 +1,4 @@
-// View Selector System
-// Handles switching between constellation view and simplified view.
+// Switches between constellation view and simplified view.
 
 const VIEW_STORAGE_KEY = 'portfolioViewMode';
 const VIEW_MODES = {
@@ -7,8 +6,7 @@ const VIEW_MODES = {
     SIMPLIFIED: 'simplified'
 };
 
-// Inline SVG symbols rather than emoji: they inherit the current text colour,
-// scale cleanly, and look the same on every platform.
+// Inline SVG rather than emoji, so the icons inherit text colour and scale cleanly.
 const VIEW_ICONS = {
     [VIEW_MODES.CONSTELLATION]: `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"
@@ -30,9 +28,6 @@ const VIEW_ICONS = {
         </svg>`
 };
 
-/**
- * Initialize the view selector system
- */
 function initViewSelector() {
     const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
 
@@ -44,9 +39,6 @@ function initViewSelector() {
     }
 }
 
-/**
- * Show the view selection modal
- */
 function showViewSelectorModal() {
     const modal = document.createElement('div');
     modal.id = 'viewSelectorModal';
@@ -118,9 +110,6 @@ function showViewSelectorModal() {
     continueBtn.focus();
 }
 
-/**
- * Apply the selected view mode
- */
 function applyViewMode(viewMode) {
     if (viewMode === VIEW_MODES.SIMPLIFIED) {
         loadSimplifiedView();
@@ -132,9 +121,6 @@ function applyViewMode(viewMode) {
     addViewToggleButton();
 }
 
-/**
- * Load the constellation view (original)
- */
 function loadConstellationView() {
     const currentPage = getCurrentPage();
 
@@ -168,9 +154,6 @@ function loadConstellationView() {
     }
 }
 
-/**
- * Load the simplified view
- */
 function loadSimplifiedView() {
     const currentPage = getCurrentPage();
 
@@ -197,16 +180,12 @@ function loadSimplifiedView() {
         }
         setProjectsSubtitle(VIEW_MODES.SIMPLIFIED);
     } else if (currentPage === 'about') {
-        // About page doesn't have a view selector, but we can still notify
-        // that simplified view is active
+        // The about page has no view selector but still reports simplified view.
         document.body.classList.add('simplified-view-active');
     }
 }
 
-/**
- * Update the projects page subheading so it describes whichever view is
- * actually on screen (stars vs. tiles).
- */
+// Keeps the projects subheading matched to whichever view is on screen.
 function setProjectsSubtitle(viewMode) {
     const subtitle = document.getElementById('projectsSubtitle');
     if (!subtitle) return;
@@ -216,9 +195,6 @@ function setProjectsSubtitle(viewMode) {
         : 'Click on a star to explore each project';
 }
 
-/**
- * Determine current page
- */
 function getCurrentPage() {
     const pathname = window.location.pathname.toLowerCase();
     if (pathname.includes('projects')) {
@@ -231,16 +207,10 @@ function getCurrentPage() {
     return 'unknown';
 }
 
-/**
- * Get current view mode
- */
 function getCurrentViewMode() {
     return localStorage.getItem(VIEW_STORAGE_KEY) || VIEW_MODES.CONSTELLATION;
 }
 
-/**
- * Toggle view mode
- */
 function toggleViewMode() {
     const current = getCurrentViewMode();
     const newMode = current === VIEW_MODES.CONSTELLATION ? VIEW_MODES.SIMPLIFIED : VIEW_MODES.CONSTELLATION;
@@ -248,10 +218,7 @@ function toggleViewMode() {
     location.reload();
 }
 
-/**
- * Add a view mode toggle button to the page. The icon shows the view you
- * would switch *to*, not the one you are in.
- */
+// The toggle icon shows the view you would switch to, not the one you are in.
 function addViewToggleButton() {
     if (document.getElementById('viewToggleBtn')) {
         return;

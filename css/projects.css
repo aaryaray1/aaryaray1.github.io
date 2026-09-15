@@ -1,7 +1,4 @@
-/* ==========================================================================
-   Projects page - constellation view, tile view, and the project dialog.
-   Tokens and typography come from styles.css.
-   ========================================================================== */
+/* Projects page: constellation view, tile view, project dialog. Tokens come from styles.css. */
 
 .projects-container {
     max-width: 1180px;
@@ -28,9 +25,7 @@
     margin: 0 auto;
 }
 
-/* --------------------------------------------------------------------------
-   Constellation view
-   -------------------------------------------------------------------------- */
+/* Constellation view */
 
 .constellation-view {
     display: flex;
@@ -40,18 +35,14 @@
     animation: riseIn 0.9s var(--ease) 0.12s both;
 }
 
-/* This page is not a single-screen flex column like the home page, so the
-   constellation gets an explicit height instead of filling leftover space.
-   Nine labelled stars need the room. */
+/* Not a single-screen flex column like the home page, so height is explicit. */
 #projectsConstellation {
     cursor: crosshair;
     flex: none;
     height: clamp(340px, 52vh, 660px);
 }
 
-/* --------------------------------------------------------------------------
-   Tile view
-   -------------------------------------------------------------------------- */
+/* Tile view */
 
 .projects-grid {
     display: grid;
@@ -99,8 +90,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--mauve);
-    /* Mauve is the less luminous hue, so it is carried a little higher than
-       the violet it replaced to hold the same contrast against the sky. */
+    /* Mauve is less luminous than the violet it replaced, so it sits higher. */
     opacity: 0.72;
     white-space: nowrap;
 }
@@ -147,9 +137,7 @@
     color: #fff;
 }
 
-/* --------------------------------------------------------------------------
-   Project dialog (opened from a star)
-   -------------------------------------------------------------------------- */
+/* Project dialog, opened from a star */
 
 .project-modal {
     position: fixed;
@@ -285,9 +273,7 @@
     background: rgba(211, 169, 214, 0.45);
 }
 
-/* --------------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------------- */
+/* Responsive */
 
 @media (max-width: 768px) {
     .projects-grid {

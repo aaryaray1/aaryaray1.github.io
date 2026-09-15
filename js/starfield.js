@@ -1,21 +1,4 @@
-/* =============================================================================
-   Night sky
-
-   Paints the background of every page. The field is generated from scratch on
-   each page load, so no two visits - and no two pages - show the same sky.
-
-   Two canvases:
-     .sky-static  drawn once per resize. Nebulosity, the Milky Way band, dust
-                  lanes and every star. This is where the cost lives, and it is
-                  paid once instead of on every frame.
-     .sky-live    every star that twinkles, plus the occasional meteor. The
-                  halo around a star is a pre-rendered sprite rather than a
-                  fresh gradient, so a real share of the field can move and
-                  still hold frame rate.
-
-   Star positions are stored normalised (0..1), so a resize re-lays out the
-   same sky rather than shuffling it.
-   ========================================================================== */
+/* Night sky. .sky-static holds the field and costs one paint per resize; .sky-live holds twinkles and meteors. */
 
 (function () {
     'use strict';
@@ -25,23 +8,12 @@
 
     const TAU = Math.PI * 2;
 
-    // How much of a twinkling star is laid down on the static layer. The live
-    // layer stacks on top of it, so this is the floor the flicker falls back
-    // to - low enough that the swing is visible, high enough that a star never
-    // blinks out completely.
+    // The floor the flicker falls back to, so a twinkling star never blinks out completely.
     const TWINKLE_FLOOR = 0.26;
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-    /* --- Per-page presets --------------------------------------------------
-       density    stars per unit area, relative
-       band       brightness of the Milky Way (0 = none)
-       bandWidth  half-thickness of the band, as a fraction of viewport height
-       bandY      where the band crosses the vertical centre line
-       bandAngle  tilt in radians
-       twinkle    how many stars are animated, capped by how many of them
-                  fall in the right magnitude range for it
-    */
+    /* Per-page presets: density, band brightness/width/position/angle, and twinkle count. */
     const SKIES = {
         home: {
             density: 1.15, band: 0.5, bandWidth: 0.22, bandY: 0.2, bandAngle: -0.4,
@@ -53,10 +25,7 @@
             dust: 3, blooms: 3, bloom: 0.045, twinkle: 185, vignette: 0.55,
             meteor: [8000, 20000]
         },
-        // The "standing in a dark field looking up" sky: dense, bright, with the
-        // galactic core sweeping right across the page. The band is kept narrow
-        // relative to the viewport so it reads as a defined arch rather than
-        // general haze, and most of the stars are packed into it.
+        // Dense and bright, with a narrow band so it reads as an arch rather than haze.
         about: {
             density: 3.2, band: 1.35, bandWidth: 0.17, bandY: 0.52, bandAngle: -0.52,
             dust: 7, blooms: 4, bloom: 0.075, twinkle: 360, vignette: 0.28,
@@ -70,9 +39,7 @@
             : 'home';
     const cfg = SKIES[page];
 
-    /* --- Colour ------------------------------------------------------------
-       Star tints, roughly following real spectral classes but pulled towards
-       the site palette. Weights are cumulative. */
+    /* Star tints, loosely spectral but pulled towards the site palette. Weights are cumulative. */
     const TINTS = [
         { c: '255,255,255', w: 0.50 },  // white
         { c: '203,218,255', w: 0.65 },  // blue-white
@@ -117,9 +84,7 @@
     const veil = document.createElement('div');
     veil.className = 'sky-veil';
 
-    // Never shown. The wash and the nebulosity are baked here so they can be
-    // laid down again without the stars, and without the random draws that
-    // built them coming out different the second time.
+    // Never shown: bakes the wash and nebulosity so they can be relaid without re-randomising.
     const backCanvas = document.createElement('canvas');
 
     const sctx = staticCanvas.getContext('2d');
@@ -143,9 +108,7 @@
         let y;
 
         if (inBand) {
-            // Place along the band axis with a bell-shaped scatter either side,
-            // and a gentle arc so it reads as a galactic plane rather than a
-            // ruled line.
+            // Bell-shaped scatter along the band axis, arced so it is not a ruled line.
             const t = rand(-0.75, 0.75);
             const arc = Math.cos(t * Math.PI * 0.5) * cfg.bandWidth * 0.35;
             const n = bell() * cfg.bandWidth + arc;
@@ -159,8 +122,7 @@
             y = Math.random();
         }
 
-        // Magnitude skewed hard towards the faint end: a real sky is mostly
-        // pinpricks with a scattering of bright ones.
+        // Skewed to the faint end: a real sky is mostly pinpricks.
         const mag = Math.pow(Math.random(), 3.1);
         const r = 0.3 + mag * 2.4;
         const a = 0.34 + Math.pow(Math.random(), 0.55) * 0.66;
@@ -169,8 +131,7 @@
             x, y, r, a, c: pickTint(), tw: false,
             // Scintillation - the fast, irregular flicker.
             ph: Math.random() * TAU, sp: rand(0.7, 2.6),
-            // Breath - the slow swell running underneath it, an order of
-            // magnitude slower, and the half that carries the size change.
+            // Breath: the slow swell underneath, and the half that carries the size change.
             bph: Math.random() * TAU, bp: rand(0.13, 0.4),
             // Brightness envelope and size swing, filled in by setSwing().
             lo: 1, hi: 1, swell: 0
@@ -189,11 +150,7 @@
             if (star) stars.push(star);
         }
 
-        // Everything below the brightest few is fair game. The top of the
-        // range is left out on purpose: those stars carry diffraction spikes,
-        // which live on the static layer, and a core that moves under a fixed
-        // spike reads as a glitch. Their static pass is dimmed so the live
-        // layer has room to brighten them.
+        // The brightest few are left out: their spikes are static, and a moving core under a fixed spike reads as a glitch.
         twinklers = [];
         const pool = stars.filter((s) => s.r >= 0.5 && s.r <= 2.35);
         const wanted = Math.min(cfg.twinkle, Math.round(pool.length * 0.62));
@@ -205,20 +162,7 @@
         }
     }
 
-    /* Work out one star's brightness envelope and size swing, once.
-
-       Two things shape it.
-
-       Faint stars scintillate harder than bright ones. That is how the real
-       thing behaves - the smaller the disc, the more a pocket of moving air
-       can do to it - and it usefully puts the loudest movement on the stars
-       least able to shout over a line of text.
-
-       And the swing is pulled back in towards its own middle for anything
-       sitting near the centre column, because that column is where the reading
-       happens on all three pages. The stars that really flash end up out at
-       the edges, clear of the copy; the ones behind a paragraph still move,
-       just quietly. */
+    /* Faint stars scintillate hardest, and anything near the reading column is damped. */
     function setSwing(star) {
         // 1 at the faint end of the twinkling range, 0 at the bright end.
         const faint = 1 - Math.min(Math.max((star.r - 0.5) / 1.85, 0), 1);
@@ -234,8 +178,7 @@
 
         star.lo = mid + (lo - mid) * damp;
         star.hi = mid + (hi - mid) * damp;
-        // A few percent of radius on the swell: enough to read as a pulse
-        // rather than a flicker, small enough that nothing visibly inflates.
+        // A few percent of radius: a pulse, not a flicker, and nothing visibly inflates.
         star.swell = (0.09 + faint * 0.13) * damp;
     }
 
@@ -261,8 +204,7 @@
     function paintMilkyWay(ctx) {
         if (cfg.band <= 0) return;
 
-        // Convert the tilt from normalised space into pixel space so the band
-        // keeps its intended slope whatever the viewport aspect ratio.
+        // Tilt converted to pixel space so the slope survives any viewport aspect ratio.
         const angle = Math.atan2(Math.sin(cfg.bandAngle) * height, Math.cos(cfg.bandAngle) * width);
         const span = Math.hypot(width, height) * 1.25;
         const half = cfg.bandWidth * height;
@@ -271,16 +213,14 @@
         ctx.translate(width / 2, cfg.bandY * height);
         ctx.rotate(angle);
 
-        // Glowing core, built from overlapping puffs so the edges stay ragged.
-        // A wide, flat wash first, then brighter concentrations inside it.
+        // Overlapping puffs so the edges stay ragged: a flat wash first, then brighter cores.
         ctx.globalCompositeOperation = 'lighter';
         const puffs = 22;
         for (let i = 0; i < puffs; i++) {
             const f = i / (puffs - 1) - 0.5;
             const t = f * span;
             const arc = Math.cos(f * Math.PI) * half * 0.5;
-            // The band is brightest towards the middle of its run, the way the
-            // galactic centre outshines the arms either side of it.
+            // Brightest mid-run, the way the galactic centre outshines the arms.
             const weight = 0.45 + Math.cos(f * Math.PI) * 0.55;
             blob(
                 ctx,
@@ -294,8 +234,7 @@
             );
         }
 
-        // Dust lanes: the dark rifts that split the band lengthwise. Long and
-        // thin, so they cut the band rather than just dimming it.
+        // Dust lanes: long and thin, so they cut the band rather than dimming it.
         ctx.globalCompositeOperation = 'source-over';
         for (let i = 0; i < cfg.dust; i++) {
             blob(
@@ -331,8 +270,7 @@
         ctx.restore();
     }
 
-    // Diffraction spikes on the brightest few stars - the detail that makes a
-    // rendered sky read as a photograph rather than a dot pattern.
+    // Diffraction spikes on the brightest few, so the sky reads as a photograph.
     function paintSpikes(ctx, x, y, len, alpha, color) {
         const h = ctx.createLinearGradient(x - len, y, x + len, y);
         h.addColorStop(0, 'rgba(' + color + ',0)');
@@ -349,13 +287,7 @@
         ctx.fillRect(x - 0.4, y - len, 0.8, len * 2);
     }
 
-    /* The halo around a star used to be a radial gradient built fresh every
-       time the star was drawn, and that cost is what kept the animated
-       population down to a few dozen. Each tint now gets one pre-rendered
-       halo, stamped with drawImage and scaled to the star: the same picture
-       for a fraction of the per-frame work, which is what pays for a sky where
-       a real share of the stars are moving. The core stays a genuine arc, so
-       it reads as a hard point however far the halo is scaled around it. */
+    /* One pre-rendered halo per tint, stamped with drawImage; a fresh gradient per star was the bottleneck. */
 
     const SPRITE_R = 24;
     const sprites = new Map();
@@ -368,8 +300,7 @@
         canvas.width = SPRITE_R * 2;
         canvas.height = SPRITE_R * 2;
 
-        // The stops carry the halo's shape only; the star's own alpha is
-        // applied at draw time, through globalAlpha.
+        // The stops carry shape only; the star's alpha is applied at draw time.
         const ctx = canvas.getContext('2d');
         const g = ctx.createRadialGradient(SPRITE_R, SPRITE_R, 0, SPRITE_R, SPRITE_R, SPRITE_R);
         g.addColorStop(0, 'rgba(' + color + ',0.42)');
@@ -382,17 +313,14 @@
         return canvas;
     }
 
-    // `lite` skips the diffraction spikes, which only ever belong on the
-    // static layer. `scale` is the pulse: 1 is the star at rest.
+    // `lite` skips the static-layer spikes; `scale` is the pulse, 1 being at rest.
     function paintStar(ctx, star, alpha, lite, scale) {
         const x = star.x * width;
         const y = star.y * height;
         const a = alpha > 1 ? 1 : alpha;
         const r = star.r * (scale || 1);
 
-        // Gated on the resting radius, not the pulsed one: a star sitting
-        // right on the threshold would otherwise pop its halo in and out
-        // every time the swell carried it across.
+        // Gated on resting radius, or a star on the threshold would pop its halo in and out.
         if (star.r > 1.35) {
             const reach = r * 7;
             ctx.globalAlpha = a;
@@ -445,13 +373,10 @@
         sctx.drawImage(backCanvas, 0, 0, staticCanvas.width, staticCanvas.height);
         sctx.scale(staticCanvas.width / width, staticCanvas.height / height);
 
-        // Once the hole has been clicked the stars belong to the live layer,
-        // and so does the vignette, which has to end up over them.
+        // After the hole is clicked the stars and the vignette both belong to the live layer.
         if (sink) return;
 
-        // When nothing is going to brighten them - reduced motion, so no live
-        // layer at all - the twinklers are laid down at full strength instead,
-        // otherwise the field would just look moth-eaten.
+        // Under reduced motion there is no live layer, so twinklers go down at full strength.
         const floor = motionQuery.matches ? 1 : TWINKLE_FLOOR;
 
         for (let i = 0; i < stars.length; i++) {
@@ -469,8 +394,7 @@
     let nextMeteor = performance.now() + rand(cfg.meteor[0], cfg.meteor[1]);
 
     function spawnMeteor() {
-        // Always travelling downwards, from a random point along the top two
-        // thirds of one edge or the top.
+        // Always downwards, from the top edge or the top two thirds of a side.
         const dir = Math.random() < 0.5 ? 1 : -1;
         const angle = rand(0.35, 0.85) * dir;
         meteor = {
@@ -528,18 +452,20 @@
 
     /* --- Live layer --------------------------------------------------------- */
 
-    // js/blackhole.js calls collapseSky() when the hole is clicked: every star
-    // runs the same decaying spiral the page content is on, streaking as it goes.
+    // collapseSky() puts every star on the same decaying spiral as the page content.
 
-    const SINK_SWIRL = 2.2;
+    const SINK_SWIRL = 2.9;
 
     let sink = null;
     let sinkAt = 0;
     let sinkFor = 0;
 
-    function collapseSky(viewX, viewY, duration) {
+    function collapseSky(viewX, viewY, duration, tearY) {
         const box = host.getBoundingClientRect();
         sink = { x: viewX - box.left, y: viewY - box.top };
+        // The line the page tears along; the sky splits on the same one.
+        const tear = typeof tearY === 'number' ? tearY - box.top : height / 2;
+        const tearReach = Math.max(tear, height - tear) || 1;
 
         const reach = Math.max(
             Math.hypot(sink.x, sink.y),
@@ -557,16 +483,16 @@
             star.fr = r;
             star.fc = dx / r;
             star.fs = dy / r;
-            // Its own appointment with the hole. Mostly luck, biased so the
-            // near sky goes first: the field is eaten grain by grain from the
-            // inside out, rather than sliding in as one sheet.
+            // Its own appointment with the hole, biased so the near sky goes first.
             star.ft = rand(0.32, 0.94) + 0.3 * (r / reach);
+            // Above the tear rides up over the hole, below sinks under, on the line drops straight in.
+            const off = Math.max(-1, Math.min(1, (star.y * height - tear) / tearReach));
+            const lean = Math.sin(off * Math.PI / 2);
             // Inner sky sweeps round hardest, the way a disc winds up.
-            star.fw = SINK_SWIRL * (0.4 + 0.6 * (1 - r / reach));
+            star.fw = SINK_SWIRL * lean * (0.4 + 0.6 * (1 - r / reach));
         }
 
-        // The stars come off the baked layer; the wash and the band stay put,
-        // so the colour behind them never changes.
+        // Stars come off the baked layer; the wash and band stay, so the colour behind holds.
         paintStatic();
 
         sinkFor = duration;
@@ -585,8 +511,7 @@
         for (let i = 0; i < stars.length; i++) {
             const star = stars[i];
 
-            // Each star runs its own clock, so at any instant the field holds
-            // every stage at once: some barely moving, some already gone.
+            // Each star runs its own clock, so the field holds every stage at once.
             const q = p / star.ft;
             if (q >= 1) continue;
 
@@ -626,8 +551,7 @@
             lctx.lineTo(x, y);
             lctx.stroke();
 
-            // The brightest few keep their spikes until they are properly under
-            // way, so nothing pops at the moment the live layer takes over.
+            // The brightest keep their spikes a while, so nothing pops as the live layer takes over.
             if (star.r > 2.45 && pull < 0.3) {
                 paintSpikes(lctx, x, y, star.r * 6.5, a * 0.3 * (1 - pull / 0.3), star.c);
             }
@@ -657,17 +581,14 @@
         for (let i = 0; i < twinklers.length; i++) {
             const star = twinklers[i];
 
-            // Scintillation: two detuned sines, so the flicker never settles
-            // into a rhythm the eye can follow.
+            // Scintillation: two detuned sines, so the flicker never finds a rhythm.
             const flick = Math.sin(t * star.sp + star.ph) * 0.62
                 + Math.sin(t * star.sp * 2.63 + star.ph * 1.7) * 0.38;
 
-            // Breath: the slow swell underneath. This is the half that reads
-            // as a pulse rather than a flicker.
+            // Breath: the slow swell underneath, the half that reads as a pulse.
             const breath = Math.sin(t * star.bp + star.bph);
 
-            // 0..1, weighted towards the flicker but never leaving the swell
-            // behind, so the two never separate into two visible effects.
+            // Weighted to the flicker but never dropping the swell, so they stay one effect.
             const lift = (flick * 0.5 + 0.5) * 0.7 + (breath * 0.5 + 0.5) * 0.3;
 
             paintStar(
@@ -705,10 +626,7 @@
         meteor = null;
     }
 
-    /* --- Parallax -----------------------------------------------------------
-       A few pixels of drift under the pointer. Transform only, so it never
-       costs a repaint - the .stars-background element is deliberately bled
-       past the viewport so the edges never show. */
+    /* Parallax: a few pixels of pointer drift, transform only so it never repaints. */
 
     let targetX = 0;
     let targetY = 0;
@@ -732,8 +650,7 @@
 
     function size() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        // The host is bled 32px past the viewport on every side for parallax;
-        // fall back to that if it has not been laid out yet.
+        // Host is bled 32px past the viewport for parallax; fall back to that pre-layout.
         width = host.clientWidth || window.innerWidth + 64;
         height = host.clientHeight || window.innerHeight + 64;
 
@@ -757,15 +674,13 @@
         window.addEventListener('pointermove', onPointerMove, { passive: true });
     }
 
-    // Resize: re-lay out the same sky rather than generating a new one, so a
-    // window drag does not reshuffle the stars under the reader.
+    // Resize re-lays out the same sky, so a window drag does not reshuffle it.
     let resizeTimer = 0;
     let lastW = window.innerWidth;
     let lastH = window.innerHeight;
 
     window.addEventListener('resize', () => {
-        // Mobile browsers fire resize as the URL bar hides; ignore height-only
-        // changes small enough to be that rather than a real layout change.
+        // Mobile URL bars fire resize; ignore height-only changes small enough to be that.
         if (window.innerWidth === lastW && Math.abs(window.innerHeight - lastH) < 120) return;
         lastW = window.innerWidth;
         lastH = window.innerHeight;
@@ -784,9 +699,7 @@
     });
 
     const onMotionChange = () => {
-        // Twinklers are drawn at a different strength depending on whether a
-        // live layer is going to sit over them, so the static pass has to be
-        // redone whenever that changes.
+        // Twinkler strength depends on whether a live layer sits over them, so restatic on change.
         paintStatic();
         if (motionQuery.matches) stopLive();
         else startLive();

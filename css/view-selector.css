@@ -1,8 +1,4 @@
-/* ==========================================================================
-   View selector - first-visit dialog and the persistent toggle.
-   Icons are inline SVG symbols (see js/view-selector.js), not emoji, so they
-   inherit colour and stay consistent across platforms.
-   ========================================================================== */
+/* View selector: first-visit dialog and persistent toggle. Icons are inline SVG from js/view-selector.js. */
 
 .view-selector-modal {
     position: fixed;
@@ -149,9 +145,7 @@ body.modal-open {
     overflow: hidden;
 }
 
-/* --------------------------------------------------------------------------
-   Persistent toggle
-   -------------------------------------------------------------------------- */
+/* Persistent toggle */
 
 .view-toggle-btn {
     position: fixed;

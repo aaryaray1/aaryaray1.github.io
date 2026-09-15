@@ -1,5 +1,4 @@
-// Project data used to build the Projects page, both in constellation
-// and tile (simplified) view.
+// Project data for both the constellation and tile views.
 const projects = [
     {
         id: 'captain-alex',
@@ -58,8 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Build a real, night-sky-accurate constellation (same geometry engine as the
-// homepage) and place each project on one of its stars.
+// Real star geometry from the homepage engine, one project per star.
 function initProjectConstellation() {
     const svg = document.getElementById('projectsConstellation');
     if (!svg) return;

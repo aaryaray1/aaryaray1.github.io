@@ -1,11 +1,4 @@
-/* ==========================================================================
-   Aarya Ray Chaudhuri - portfolio
-   Base layer: design tokens, typography, the night sky, page furniture.
-
-   The sky itself is drawn to a canvas by js/starfield.js, which generates a
-   fresh random field on every page load. Everything here only positions and
-   tints those layers; no starfield coordinates live in CSS.
-   ========================================================================== */
+/* Base layer: design tokens, typography, the night sky, page furniture. */
 
 :root {
     /* --- Palette -------------------------------------------------------- */
@@ -14,10 +7,7 @@
     --violet-400: #9D4EDD;
     --violet-600: #6A47AA;
 
-    /* Lavender and mauve sit a step warmer and pinker than the violets above.
-       They are the accent voice: small marks, captions, the colour inside a
-       glow. Used at that scale they warm the palette without turning it - a
-       second note rather than a second theme. */
+    /* Lavender and mauve are the accent voice: small marks, captions, the colour inside a glow. */
     --lavender:   #CBB6F2;
     --mauve:      #D3A9D6;
     --mauve-deep: #8E5B92;
@@ -64,8 +54,7 @@
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 
-    /* Resting position of the black hole. Shared by the button and by the
-       transition keyframes so the two can never drift apart. */
+    /* Resting position of the black hole, shared with the transition keyframes. */
     --bh-top: 2rem;
     --bh-left: 2.25rem;
 }
@@ -121,9 +110,7 @@ a {
     border-radius: 4px;
 }
 
-/* ==========================================================================
-   Typography primitives
-   ========================================================================== */
+/* Typography primitives */
 
 h1, h2, h3 {
     font-family: var(--font-display);
@@ -145,8 +132,7 @@ h4 {
     letter-spacing: -0.005em;
 }
 
-/* Small mono line above a heading - the metadata voice used for captions,
-   years, tech tags and footer text. */
+/* Small mono line above a heading: captions, years, tech tags, footer text. */
 .kicker {
     font-family: var(--font-mono);
     font-size: var(--t-micro);
@@ -165,11 +151,7 @@ h4 {
     max-width: 46ch;
 }
 
-/* ==========================================================================
-   The sky
-   Two stacked canvases drawn by js/starfield.js, then a veil that keeps text
-   legible over the brightest parts of the field.
-   ========================================================================== */
+/* The sky: two canvases from js/starfield.js, plus a veil that keeps text legible. */
 
 .stars-background {
     position: fixed;
@@ -206,9 +188,7 @@ h4 {
     background: radial-gradient(ellipse 62% 46% at 50% 40%, rgba(4, 3, 10, 0.6), transparent 78%);
 }
 
-/* About: the Milky Way runs right through the page, so the veil is a soft
-   pool of shadow sized to the reading column - the sky stays bright at the
-   edges while the text sits on near-solid black. */
+/* About: the veil is sized to the reading column, so the sky stays bright at the edges. */
 .about-page .sky-veil {
     background:
         radial-gradient(ellipse 660px 58% at 50% 46%,
@@ -218,9 +198,7 @@ h4 {
         linear-gradient(180deg, rgba(3, 2, 9, 0.42), rgba(3, 2, 9, 0.1) 32%, rgba(3, 2, 9, 0.5));
 }
 
-/* On a phone the veil spans the whole viewport, so it is eased off - the
-   text-shadow on the body copy carries the contrast from there, and the sky
-   stays worth looking at. */
+/* On a phone the veil covers everything, so it eases off and text-shadow carries the contrast. */
 @media (max-width: 768px) {
     .about-page .sky-veil {
         background:
@@ -232,9 +210,7 @@ h4 {
     }
 }
 
-/* ==========================================================================
-   Black hole - the "home" control
-   ========================================================================== */
+/* Black hole: the home control */
 
 .black-hole-home {
     position: fixed;
@@ -307,11 +283,7 @@ h4 {
     100% { transform: translate(-50%, -50%) scale(1) rotate(-360deg); opacity: 0.32; }
 }
 
-/* ==========================================================================
-   Page transition - everything falls into the black hole
-   The spiral, the stretch and the wind-up of the sky are driven from
-   js/blackhole.js; what lives here is the hole's own reaction to the meal.
-   ========================================================================== */
+/* Page transition. js/blackhole.js drives the spiral; this is the hole's own reaction. */
 
 .page-sucked {
     overflow: hidden;
@@ -328,8 +300,7 @@ h4 {
     overflow: visible;
 }
 
-/* The pool of shadow that keeps text legible has nothing left to protect, and
-   it would otherwise sit still over a sky that is turning. */
+/* Nothing left to protect, and it would sit still over a sky that is turning. */
 .page-sucked .sky-veil {
     opacity: 0;
     transition: opacity 0.45s linear;
@@ -374,8 +345,7 @@ h4 {
     }
 }
 
-/* Spiral arms of light wound around the hole. Screen-blended, so the corners
-   the rotation leaves behind stay empty rather than showing an edge. */
+/* One wedge of light per stream, hinged on the --bh-axis that js/blackhole.js sets. */
 .bh-vortex {
     position: fixed;
     inset: 0;
@@ -383,21 +353,29 @@ h4 {
     pointer-events: none;
     opacity: 0;
     mix-blend-mode: screen;
-    /* Blurred hard, so the straight radial edges a conic gradient cannot avoid
-       read as luminous haze wound round the hole rather than as searchlights. */
+    /* Blurred hard, so the conic gradient's radial edges read as haze, not searchlights. */
     filter: blur(30px);
-    background: conic-gradient(from 0deg at var(--bh-x) var(--bh-y),
+    /* The arm that falls under the hole: the half turning away from the plane. */
+    background: conic-gradient(from var(--bh-axis, 0deg) at var(--bh-x) var(--bh-y),
         rgba(206, 182, 236, 0) 0deg,
-        rgba(214, 194, 248, 0.26) 34deg,
-        rgba(157, 78, 221, 0.09) 88deg,
-        rgba(206, 182, 236, 0) 148deg,
-        rgba(190, 122, 200, 0.24) 226deg,
-        rgba(206, 182, 236, 0.08) 292deg,
+        rgba(214, 194, 248, 0.26) 46deg,
+        rgba(157, 78, 221, 0.09) 118deg,
+        rgba(206, 182, 236, 0) 178deg,
         rgba(206, 182, 236, 0) 360deg);
     -webkit-mask-image: radial-gradient(circle 62vmax at var(--bh-x) var(--bh-y),
         rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 14%, rgba(0, 0, 0, 0) 78%);
     mask-image: radial-gradient(circle 62vmax at var(--bh-x) var(--bh-y),
         rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 14%, rgba(0, 0, 0, 0) 78%);
+}
+
+/* The arm that rides up over it. Dimmer, so the two never read as symmetry. */
+.bh-vortex--over {
+    background: conic-gradient(from var(--bh-axis, 0deg) at var(--bh-x) var(--bh-y),
+        rgba(206, 182, 236, 0) 0deg,
+        rgba(206, 182, 236, 0) 182deg,
+        rgba(190, 122, 200, 0.24) 246deg,
+        rgba(206, 182, 236, 0.08) 316deg,
+        rgba(206, 182, 236, 0) 360deg);
 }
 
 /* Light stops escaping anywhere but the core. */
@@ -420,24 +398,18 @@ h4 {
             rgba(3, 2, 9, 1) 88%);
 }
 
-/* ==========================================================================
-   Navigation - hidden by design; the constellation is the navigation.
-   ========================================================================== */
+/* Navigation is hidden by design; the constellation is the navigation. */
 
 .navbar {
     display: none;
 }
 
-/* ==========================================================================
-   Home - hero + constellation
-   ========================================================================== */
+/* Home: hero and constellation */
 
 .constellation-container {
     position: relative;
     z-index: 50;
-    /* Grows to fill whatever the footer leaves behind, and the constellation
-       inside it takes the space the hero does not use. That keeps the home page
-       to a single screen without anything being cropped. */
+    /* Fills what the footer leaves, keeping the home page to one uncropped screen. */
     flex: 1;
     min-height: 26rem;
     display: flex;
@@ -445,8 +417,7 @@ h4 {
     justify-content: center;
     align-items: center;
     gap: clamp(1rem, 2.5vh, 2rem);
-    /* Deliberately tighter than --block top and bottom: every pixel not spent
-       on padding goes to the constellation, which is the page. */
+    /* Tighter than --block: every pixel not spent on padding goes to the constellation. */
     padding: clamp(2.25rem, 5vh, 3.25rem) var(--gutter) clamp(1.25rem, 3vh, 2rem);
     text-align: center;
     overflow: hidden;
@@ -481,27 +452,18 @@ h4 {
 }
 
 .sky-label.visible {
-    /* A touch brighter than the violet it replaced: mauve is a warmer, less
-       luminous hue, and this keeps the caption at the same read weight. */
+    /* Brighter than the violet it replaced, so the caption keeps the same read weight. */
     opacity: 0.72;
 }
 
-/* The SVG carries preserveAspectRatio="xMidYMid meet", so giving the box a
-   definite height is what sizes the constellation: the 800x600 viewBox is
-   scaled to fit and centred, and the whole shape always stays on screen.
-   (It used to be sized at 128% width with height:auto and left to flex-shrink
-   to fit, which only worked while the page happened to be exactly one
-   viewport tall.) */
+/* preserveAspectRatio="xMidYMid meet" means a definite height is what sizes the constellation. */
 #constellationCanvas,
 #projectsConstellation {
     width: 100%;
-    /* Home: take every pixel the hero and footer leave behind. flex-basis 0
-       rather than the SVG's intrinsic aspect ratio, so the height is decided
-       by the space available and never by the viewBox. */
+    /* flex-basis 0 rather than the SVG's aspect ratio, so space decides the height, not the viewBox. */
     flex: 1 1 0;
     min-height: 13rem;
-    /* Static glow. Animating a drop-shadow on an SVG this large re-rasterises
-       the whole subtree every frame, which was the heaviest paint on the page. */
+    /* Static glow: animating a drop-shadow here re-rasterises the whole subtree every frame. */
     filter: drop-shadow(0 0 40px rgba(206, 182, 236, 0.42)) drop-shadow(0 0 90px rgba(168, 96, 190, 0.28));
     animation: riseIn 1.1s var(--ease) 0.15s both;
 }
@@ -521,16 +483,13 @@ h4 {
     50%      { opacity: 0.46; }
 }
 
-/* The visible star. Small and bright with a wide glow, so it reads as a
-   point of light rather than a filled disc; the pointer target is a separate,
-   larger, invisible circle sitting on top of it. */
+/* The visible star. The pointer target is a separate, larger, invisible circle on top. */
 .constellation-star {
     fill: #F4F0FF;
     pointer-events: none;
     transition: fill 0.35s var(--ease), filter 0.35s var(--ease);
     animation: twinkleStar 4.5s ease-in-out infinite;
-    /* White core, lavender close in, mauve furthest out - the same warming
-       run the meteor tails take. */
+    /* White core, lavender close in, mauve furthest out, as the meteor tails run. */
     filter: drop-shadow(0 0 5px rgba(230, 226, 255, 0.95))
             drop-shadow(0 0 14px rgba(203, 182, 242, 0.6))
             drop-shadow(0 0 26px rgba(160, 96, 168, 0.5));
@@ -555,14 +514,12 @@ h4 {
     fill: rgba(216, 202, 246, 0.5);
     animation: none;
     filter: drop-shadow(0 0 4px rgba(203, 182, 242, 0.45));
-    /* These have no hit target of their own, so they take pointer events
-       directly - it is what surfaces the real star's name on hover. */
+    /* No hit target of their own, so they take pointer events directly for the hover name. */
     pointer-events: auto;
     cursor: default;
 }
 
-/* Twinkle through transform + opacity (compositor-only) rather than the SVG
-   `r` attribute, which forces layout for every star on every frame. */
+/* Twinkle via transform and opacity; the SVG `r` attribute would force layout every frame. */
 @keyframes twinkleStar {
     0%, 100% { opacity: 0.72; transform: scale(1); }
     50%      { opacity: 1;    transform: scale(1.06); }
@@ -570,10 +527,7 @@ h4 {
 
 .constellation-label {
     font-family: var(--font-sans);
-    /* Size and text-anchor are both set by js/constellations.js, which places
-       each caption on whichever side of its star is free. Declaring either one
-       here would override that (CSS beats an SVG presentation attribute) and
-       slide every caption back over its own star. */
+    /* js/constellations.js sets size and text-anchor; declaring them here would override it. */
     font-weight: 500;
     letter-spacing: 0.01em;
     fill: var(--lavender);
@@ -588,9 +542,7 @@ h4 {
     fill: #fff;
 }
 
-/* ==========================================================================
-   About
-   ========================================================================== */
+/* About */
 
 .about-container {
     max-width: 980px;
@@ -634,8 +586,7 @@ h4 {
     color: var(--ink-2);
     line-height: 1.8;
     margin-bottom: 1.35rem;
-    /* Belt and braces over a bright Milky Way - the veil does most of the
-       work, this keeps body copy crisp where a bright patch shows through. */
+    /* Keeps body copy crisp where a bright patch of Milky Way shows through the veil. */
     text-shadow: 0 1px 16px rgba(2, 1, 8, 0.95);
 }
 
@@ -708,9 +659,7 @@ h4 {
     box-shadow: 0 0 8px rgba(211, 169, 214, 0.7);
 }
 
-/* ==========================================================================
-   Footer
-   ========================================================================== */
+/* Footer */
 
 .footer {
     position: relative;
@@ -752,9 +701,7 @@ h4 {
     font-size: 1rem;
 }
 
-/* ==========================================================================
-   Simplified view
-   ========================================================================== */
+/* Simplified view */
 
 #simplifiedHomeContainer {
     position: relative;
@@ -876,9 +823,7 @@ h4 {
     font-size: 0.95rem;
 }
 
-/* ==========================================================================
-   Shared animations
-   ========================================================================== */
+/* Shared animations */
 
 @keyframes riseIn {
     from { opacity: 0; transform: translateY(18px); }
@@ -896,9 +841,7 @@ h4 {
     to   { opacity: 1; transform: none; }
 }
 
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
+/* Responsive */
 
 @media (max-width: 900px) {
     .about-content {
@@ -943,9 +886,7 @@ h4 {
     }
 }
 
-/* ==========================================================================
-   Motion preferences
-   ========================================================================== */
+/* Motion preferences */
 
 @media (prefers-reduced-motion: reduce) {
     html {
